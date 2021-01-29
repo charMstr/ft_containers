@@ -1,0 +1,22 @@
+
+####### VALUE_TYPE
+container::value_type. contains the type used in the container: usefull to
+write a generic function that will return the correct type.
+
+example:
+	typename Container::value_type sum(const Container& cont)
+	{
+		typename Container::value_type total = 0;
+		...
+		return total;
+	}
+
+####### ALLOCATOR_TRAITS
+use it as an interface in my container.
+
+####### INSERT
+container.insert(container.end(), 12);
+same as
+container.inser(std::end(container), 12);
+
+####### __PRETTY_FUNCTION__
