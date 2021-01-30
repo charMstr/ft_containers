@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/15 21:24:00 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/29 10:52:54 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/30 10:56:12 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,15 +191,15 @@ void	test_front_and_back(void)
 	std::vector<int> cont1;	
 	ft::vector<int> ft_cont1;	
 
-	int &a = cont1.front();
+	//int &a = cont1.front(); //warning, creates a reference on NULL
 	//a = 12; //provoques a sefault on the std.
 	//a = cont1.back(); //segfault
-	(void)a;
+	//(void)a;
 
-	int &b = ft_cont1.front();
+	//int &b = ft_cont1.front(); //warning, creates a reference on NULL
 	//b = 12; //provoques a sefault as well: OK
 	//b = cont1.back(); //segfault
-	(void)b;
+	//(void)b;
 
 	std::vector<int> cont2(2,2);	
 	ft::vector<int> ft_cont2(2,2);	
@@ -489,20 +489,6 @@ void	test_erase(void)
 	test_erase_range(10, 3, 9);
 }
 
-void	test_swap(void)
-{
-	ft::vector< int > ft_cont1(3, 100);
-	ft::vector< int > ft_cont2(5, 42);
-	/*
-	std::cout << "before swap:"<< std::endl;
-	display_ft_cont(ft_cont1);
-	display_ft_cont(ft_cont2);
-	ft_cont1.swap(ft_cont2);
-	display_ft_cont(ft_cont1);
-	display_ft_cont(ft_cont2);
-	*/
-}
-
 void	test_equal_operator(void)
 {
 	ft::vector<int> ft_cont1;
@@ -558,6 +544,93 @@ void	test_inferior_operator(void)
 		*/
 }
 
+void	test_assign_fill(size_t initial_size, size_t new_size, int val)
+{
+	std::vector<int> std_cont;
+	ft::vector<int> ft_cont;
+	for (size_t i = 0; i < initial_size; i++)
+	{
+		std_cont.push_back(i);
+		ft_cont.push_back(i);
+	}
+
+	std_cont.assign(new_size, val);
+	ft_cont.assign(new_size, val);
+	compare_std_ft_cont(ft_cont, std_cont);
+}
+
+void test_assign_range(size_t initial_size, size_t offset1, size_t offset2)
+{
+	std::vector<int> std_cont1;
+	std::vector<int> std_cont2;
+	ft::vector<int> ft_cont1;
+	ft::vector<int> ft_cont2;
+
+	//filling the first set of containers
+	for (size_t i = 0; i < initial_size; i++)
+	{
+		std_cont1.push_back(i);
+		ft_cont1.push_back(i);
+	}
+
+	//assigning in an empty container
+	ft_cont2.assign(ft_cont1.begin()+ offset1, ft_cont1.begin() + offset2);
+	std_cont2.assign(std_cont1.begin()+ offset1, std_cont1.begin() + offset2);
+	compare_std_ft_cont(ft_cont2, std_cont2);
+
+	//asigning not from self, capacity is enough: no reallocation
+	ft_cont2.assign(ft_cont1.begin()+ offset1, ft_cont1.begin() + offset2);
+	std_cont2.assign(std_cont1.begin()+ offset1, std_cont1.begin() + offset2);
+	compare_std_ft_cont(ft_cont2, std_cont2);
+
+	//assigning from self, (off course capacity is enough, no reallocation).
+	ft_cont1.assign(ft_cont1.begin()+ offset1, ft_cont1.begin() + offset2);
+	std_cont1.assign(std_cont1.begin()+ offset1, std_cont1.begin() + offset2);
+	compare_std_ft_cont(ft_cont1, std_cont1);
+}
+
+void test_assign(void)
+{
+	//FILL
+	//reassigning from an empty vector
+	test_assign_fill(0, 3, 42);
+	//reassiging in a size that is smaller than current capacity
+	test_assign_fill(8, 3, 42);
+	//reassigning will need  to reallocate.
+	test_assign_fill(8, 9, 42);
+
+	//RANGE
+	test_assign_range(8, 0, 4);
+	test_assign_range(8, 4, 7);
+}
+
+void	test_swap(void)
+{
+	ft::vector< int > ft_cont1(3, 100);
+	ft::vector< int > ft_cont2(5, 42);
+	/*
+	std::cout << "before swap:"<< std::endl;
+	display_ft_cont(ft_cont1);
+	display_ft_cont(ft_cont2);
+	*/
+	ft_cont1.swap(ft_cont2);
+	/*
+	display_ft_cont(ft_cont1);
+	display_ft_cont(ft_cont2);
+	*/
+
+	/*
+	std::cout << "before swap:"<< std::endl;
+	display_ft_cont(ft_cont1);
+	display_ft_cont(ft_cont2);
+	*/
+	swap(ft_cont1, ft_cont2);	
+	/*
+	display_ft_cont(ft_cont1);
+	display_ft_cont(ft_cont2);
+	*/
+}
+
 void tests_vector(void)
 {
 	test_constructor_default();
@@ -572,7 +645,10 @@ void tests_vector(void)
 	test_push_and_pop_back();
 	test_insert();
 	test_erase();
-	test_swap();
 	test_equal_operator();
 	test_inferior_operator();
+	test_assign();
+	test_swap();
+
+	std::cout << "\033[32m [ OK ]\033[m" << std::endl;	
 }

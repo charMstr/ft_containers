@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 04:37:30 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/28 14:09:43 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/30 09:28:40 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,18 @@ void end_test(void)
 
 int	main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 {
-	/*
+
 	char test_name1[] = "random access iterators";
 	introduce_test(test_name1);
 	test_random_access_iterator();
 	end_test();
-	*/
+
+
+	char test_name3[] = "reverse iterator";
+	introduce_test(test_name3);
+	tests_reverse_iterator();
+	end_test();
+	
 
 	char test_name2[] = "ft_vector";
 	introduce_test(test_name2);

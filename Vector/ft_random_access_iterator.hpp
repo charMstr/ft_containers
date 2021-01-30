@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 00:16:32 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/26 03:11:08 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/30 06:14:42 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ namespace ft
 	*/
 		//added for readability
 		private:
-		typedef random_access_iterator r_a_iterator;
+		typedef random_access_iterator<T> r_a_iterator;
 		typedef ft::iterator< std::random_access_iterator_tag , T> base_iterator;
 
 		public:
@@ -122,7 +122,7 @@ namespace ft
 		reference operator*() const { return (*_ptrToElem); }
 
 		//-> operator
-		pointer operator->() const { return (_ptrToElem); }
+		pointer operator->() const { return &(operator*()); }
 
 		/*
 		** functions are marked friend so that they are actually defined in the

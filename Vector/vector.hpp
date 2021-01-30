@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 15:14:11 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/29 11:03:04 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/30 10:57:24 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdexcept>
 # include "ft_iterator.hpp"
 # include "ft_random_access_iterator.hpp"
+# include "ft_reverse_iterator.hpp"
 # include "ft_utils.hpp"
 
 # ifndef DEBUG
@@ -26,24 +27,6 @@
 # if defined DEBUG && DEBUG
 #  include <iostream>
 # endif
-
-namespace ft
-{
-	//TODO(Fri 22/01/2021 at 00:21:24) 
-	//MOVE ME
-	template< typename Iter >
-	class reverse_iterator
-	{
-		public:
-			typedef Iter iterator_type;
-			typedef typename iterator_traits<Iter>::value_type value_type;		
-			typedef typename iterator_traits<Iter>::difference_type difference_type;
-			typedef typename iterator_traits<Iter>::pointer pointer;		
-			typedef typename iterator_traits<Iter>::reference reference;		
-			typedef typename iterator_traits<Iter>::iterator_category iterator_category;
-		//HERE add all the special function related to this iterator.
-	};
-}
 
 namespace ft
 {
@@ -73,9 +56,8 @@ namespace ft
 		//ITERATORS
 		typedef typename ft::random_access_iterator<T> iterator;
 		typedef typename ft::random_access_iterator<T const> const_iterator;
-		//typedef typename ft::vector<const T>::const_iterator const_iterator;
-		//typedef typename ft::reverse_iterator<iterator> reverse_iterator;
-		//typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
+		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		
 		//OTHER
 		typedef typename iterator_traits<iterator>::difference_type difference_type;
@@ -224,18 +206,30 @@ namespace ft
 		iterator				end() { return (_end); }
 		const_iterator			end() const { return (_end); }
 
-		/*
+
+ //TODO(Fri 29/01/2021 at 16:12:37) 
 		//Returns a reverse iterator pointing to the last element in the vector
 		//(i.e., its reverse beginning).
-		reverse_iterator		rbegin();
-		const_reverse_iterator	rbegin() const;
+		reverse_iterator		rbegin()
+		{
+			return reverse_iterator(end());
+		}
+		const_reverse_iterator	rbegin() const
+		{
+			return reverse_iterator(end());
+		}
 
 		//Returns a reverse iterator pointing to the theoretical element
 		//preceding the first element in the vector (which is considered its
 		//reverse end).
-		reverse_iterator 		rend();
-		const_reverse_iterator	rend() const;
-		*/
+		reverse_iterator 		rend()
+		{
+			return reverse_iterator(begin());
+		}
+		const_reverse_iterator	rend() const
+		{
+			return reverse_iterator(begin());
+		}
 
 	/*
 	** ********************************************************************
@@ -341,26 +335,63 @@ namespace ft
 	** Vector: Modifiers section
 	** ********************************************************************
 	*/
+
 		//Assigns new contents to the vector, replacing its current contents,
 		//and modifying its size accordingly.
 		//range (1)
+		//note: need to copy backwards in case the range is taken from self
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last);
+		void assign (InputIterator first, InputIterator last)
+		{
+			size_type n;
+			distance(first, last, n);
+			if (n > capacity()) //need to realocate
+			{
+				_destroy(_start, _end); //destroy all existing objects.
+				_alloc.deallocate(_start, capacity());
+				_start = _alloc.allocate(n);
+				_uninitialized_copy(first, last, _start);
+				_end = _start + n;
+				_end_of_capacity = _end;
+			}
+			//checking if the range is from self
+			else if (first >= _start && first < _end)
+			{
+				vector<T> tmp(*this);	 //make a copy.
+				size_type start_to_first;
+				size_type start_to_last;
+				distance(begin(), first, start_to_first);
+				distance(begin(), last, start_to_last);
+				_destroy(_start, _end); //destroy all existing objects.
+				_uninitialized_copy(tmp.begin() + start_to_first, tmp.begin() + start_to_last, _start);
+				_end = _start + n;
+			}
+			//we know the capacity is ok (no reallocation), and we copy from
+			//something different from self
+			else
+			{
+				_destroy(_start, _end); //destroy all existing objects.
+				_uninitialized_copy(first, last, _start);
+				_end = _start + n;
+			}
+		}
+
 		//fill (2)
 		void assign (size_type n, const value_type& val)
 		{
-			if (_end_of_capacity - _start < n) //need to realocate
+			_destroy(_start, _end); //destroy all existing objects.
+			if (n <= capacity()) // no need to reallocatte.
 			{
-				//need to destroy
-				_start = _alloc.allocate(n);
-			}
-			else
-			{
+				_uninitialized_fill_n(_start, n, val);
 				_end = _start + n;
-				while (--n >= 0)
-				{
-					_alloc.construct(_start + n, val);
-				}
+			}
+			else //need to reallocate.
+			{
+				_alloc.deallocate(_start, capacity());
+				_start = _alloc.allocate(n);
+				_uninitialized_fill_n(_start, n, val);
+				_end = _start + n;
+				_end_of_capacity = _end;
 			}
 		}
 	
@@ -733,7 +764,7 @@ namespace ft
 
 	//(3)	
 	template <class T, class Alloc>
-	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
 		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));		
 	}
@@ -747,7 +778,7 @@ namespace ft
 
 	//(5)	
 	template <class T, class Alloc>
-	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
 		return (rhs < lhs);
 	}
@@ -757,6 +788,13 @@ namespace ft
 	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
 		return (!operator<(lhs, rhs));
+	}
+
+	//swap function overload
+	template <class T, class Alloc>
+	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
+	{
+		x.swap(y);
 	}
 }
 #endif

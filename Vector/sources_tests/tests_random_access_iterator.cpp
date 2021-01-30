@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 04:16:06 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/26 02:58:56 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/30 08:48:06 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,12 @@ void	 test_operators(void)
 	//pre-increment in loop
 	std_it = std_cont.begin();
 	my_it = std_cont.begin().base();	
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size - 1; i++)
 	{
 		assert(*++std_it == *++my_it);	 //checking the content is the same
 	}
+	++std_it;
+	++my_it;
 	//!= sign
 	assert(!(my_it != my_end));  //we arrived at the end
 	assert(!(std_it != std_end)); //we also arrived at the end
@@ -61,9 +63,11 @@ void	 test_operators(void)
 		assert(*std_it++ == *my_it++);	 //checking the content is the same
 	}
 
+	std_it = std_cont.end() - 1;
+	my_it = std_cont.end().base() - 1;	
 	//post decrement
 	//here both the iteraro have reach end.
-	for (size_t i = size; i > 0; i--)
+	for (size_t i = size ; i > 0; i--)
 	{
 		assert(*std_it-- == *my_it--);	 //checking the content is the same
 	}
@@ -71,7 +75,7 @@ void	 test_operators(void)
 	//pre decrement
 	std_it = std_cont.end();
 	my_it = std_cont.end().base();	
-	for (size_t i = size; i > 0; i--)
+	for (size_t i = size - 1; i > 0; i--)
 	{
 		assert(*--std_it == *--my_it);	 //checking the content is the same
 	}
@@ -79,7 +83,7 @@ void	 test_operators(void)
 	//+= operator
 	std_it = std_cont.begin();
 	my_it = std_cont.begin().base();	
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size - 1; i++)
 	{
 		std_it += 1;
 		my_it += 1;
@@ -89,7 +93,7 @@ void	 test_operators(void)
 	//+ operator
 	std_it = std_cont.begin();
 	my_it = std_cont.begin().base();	
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size - 1; i++)
 	{
 		std_it =  std_it + 1;
 		my_it = my_it + 1;
@@ -99,7 +103,7 @@ void	 test_operators(void)
 	//+ operator when the iterator is on the right hand side
 	std_it = std_cont.begin();
 	my_it = std_cont.begin().base();	
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size - 1; i++)
 	{
 		std_it = 1 + std_it;
 		my_it = 1 + my_it;
@@ -287,15 +291,17 @@ void test_conparison_between_const_and_non_const(void)
 	n = ft_const_it1 + ft_it1++;
 	n = ft_it1++ + ft_const_it1;
 	n = ft_it1 + ft_const_it1++;
-	*/ //OK
+	*/ //OK should not be defined.
 }
 
 void	test_random_access_iterator(void)
 {
 	test_operators();
+	/*
 	test_arrow_operator();
 	test_const_non_const_restrictions();
 	test_conparison_between_const_and_non_const();
+	*/
 
 	std::cout << "\033[32m [ OK ]\033[m" << std::endl;	
 }

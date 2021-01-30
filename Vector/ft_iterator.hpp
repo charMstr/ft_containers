@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 00:11:31 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/26 12:43:04 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/29 15:12:13 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,6 +257,5 @@ namespace ft
 	{
 		distance(first, last, n, typename iterator_traits<InputIterator>::iterator_category());
 	}
-
 }
 #endif
