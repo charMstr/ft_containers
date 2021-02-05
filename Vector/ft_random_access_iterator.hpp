@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 00:16:32 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/30 06:14:42 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/01/30 14:39:34 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #  define DEBUG 0
 # endif
 
+# include <iostream>
 # if defined DEBUG && DEBUG
 #  include <iostream>
 # endif
@@ -65,12 +66,12 @@ namespace ft
 		private:
 			pointer _ptrToElem;
 
-		public:
 	/*
 	** ********************************************************************
 	** random_access_iterator: constructors, destructor and copy section
 	** ********************************************************************
 	*/	
+		public:
 		//default constructor
 		random_access_iterator(void) : _ptrToElem(nullptr)
 		{

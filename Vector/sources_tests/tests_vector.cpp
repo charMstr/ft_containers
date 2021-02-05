@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/15 21:24:00 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/30 10:56:12 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/05 22:15:17 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,8 +304,8 @@ void test_insert_one(void)
 
 	for (int i = 0; i < 4; i++)
 	{
-		std_cont.insert(std_cont.begin(), 42);
-		ft_cont.insert(ft_cont.begin(), 42);
+		std_cont.insert(std_cont.begin(), i);
+		ft_cont.insert(ft_cont.begin(), i);
 		compare_std_ft_cont(ft_cont, std_cont);
 	}
 
@@ -393,7 +393,6 @@ void	test_insert(void)
 	test_insert_fill(12, 6, 4 , 3);
 	test_insert_fill(12, 6, 4 , 2);
 	test_insert_fill(12, 6, 4 , 1);
-	std::cout << std::endl;
 
 	//range insert within existing capacity
 	test_insert_range(12, 6, 4 , 1, 2);
@@ -404,7 +403,6 @@ void	test_insert(void)
 	//range insert out of existing capacity
 	test_insert_range(12, 8, 4 , 1, 6);
 	test_insert_range(12, 8, 4 , 0, 8);
-	std::cout << std::endl;
 }
 
 void	test_erase_one(size_t size, size_t  offset)
@@ -631,9 +629,43 @@ void	test_swap(void)
 	*/
 }
 
+void test_constructor_copy()
+{
+	ft::vector< int > ft_cont1(1, 100);
+	ft::vector< int > ft_cont2(5, 42);
+	ft::vector< int > ft_cont3(ft_cont2);
+	ft_cont3 = ft_cont2;
+}
+
+void test_clear(void)
+{
+	ft::vector<int> ft_cont1;
+	ft_cont1.clear();
+
+	ft::vector<int> ft_cont2(3, 3);
+	ft_cont2.clear();
+}
+
+void vector_test_constructor_default(void)
+{
+	const ft::vector<int> ft_cont1(3, 2);
+
+	ft::vector<int> ft_cont2;
+	ft_cont2 = ft_cont1;
+
+	const std::vector<int> std_cont1(3, 2);
+
+	std::vector<int> std_cont2;
+	std_cont2 = std_cont1;
+
+	const std::vector<const int> std_cont3 = std::vector<const int>();
+	const ft::vector<const int> ft_cont4 = ft::vector<const int>();
+}
+
 void tests_vector(void)
 {
 	test_constructor_default();
+	test_constructor_copy();	
  	test_constructor_range();
 	test_destructor_and_clear();
 	test_begin_vs_const_begin();
@@ -649,6 +681,9 @@ void tests_vector(void)
 	test_inferior_operator();
 	test_assign();
 	test_swap();
+	test_clear();
+
+	vector_test_constructor_default();
 
 	std::cout << "\033[32m [ OK ]\033[m" << std::endl;	
 }

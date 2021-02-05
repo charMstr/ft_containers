@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 15:14:11 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/30 10:57:24 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/05 22:15:33 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ namespace ft
 			difference_type size;
 			distance(first, last, size);
 			_start = _alloc.allocate(size);
-			_end = uninitialized_copy(first, last, _start);
+			_end = _uninitialized_copy(first, last, _start);
 			_end_of_capacity = _end;
 		}
 
@@ -154,6 +154,7 @@ namespace ft
 				"destructor(vector)" <<
 				"\033[0m" << std::endl;
 			clear();
+			_alloc.deallocate(_start, capacity());
 		}
 
 		//Copy: Assigns new contents to the container, replacing its current
@@ -205,9 +206,7 @@ namespace ft
 		//vector container.
 		iterator				end() { return (_end); }
 		const_iterator			end() const { return (_end); }
-
-
- //TODO(Fri 29/01/2021 at 16:12:37) 
+ 
 		//Returns a reverse iterator pointing to the last element in the vector
 		//(i.e., its reverse beginning).
 		reverse_iterator		rbegin()
@@ -311,12 +310,14 @@ namespace ft
 		//Returns a reference to the element at position n in the vector.
 		reference		at(size_type n)
 		{
-			_checkIndex(n);	
+			if (n >= size())
+				throw (std::out_of_range("vector"));
 			return (_start[n]);
 		}
 		const_reference	at(size_type n) const
 		{
-			_checkIndex(n);	
+			if (n >= size())
+				throw (std::out_of_range("vector"));
 			return (_start[n]);
 		}
 
@@ -427,7 +428,11 @@ namespace ft
 
 			distance(begin(), position, offset_begin);
 			if (size() == capacity())
+			{
 				_grow_bigger();	
+				//reseting position in case it got invalidated
+				position = _start + offset_begin;
+			}
 			if (empty())
 			{
 				_alloc.construct(_start, val);
@@ -446,7 +451,7 @@ namespace ft
 				_alloc.destroy(_start + offset_begin);
 			_alloc.construct(_start + offset_begin, val);
 			_end++;
-			return (_start + offset_begin);
+			return (position);
 		}
 
 		//fill (2)
@@ -478,6 +483,7 @@ namespace ft
 				if (position + n < _end)
 				{
 					_uninitialized_copy(end() - n, end(), end());
+					//HERE maybe, position, end() - n, end() ?
 					_copy_backwards(position, position + n, end());
 					_initialized_fill_n(position.base(), n, val);
 					_end += n;
@@ -671,7 +677,7 @@ namespace ft
 		{
 			while (begin != end)	
 			{
-				*start++ = *begin++;
+				_alloc.construct(start++.base(), *begin++);
 			}
 			return (start.base());
 		}
@@ -686,34 +692,35 @@ namespace ft
 		** note: the memory does need destruction as it is initialized.
 		*/
 		template <typename InputIterator>
-		pointer
+		iterator
 		_initialized_copy(InputIterator begin, InputIterator end, iterator start)
 		{
 			while (begin != end)	
 			{
-				_alloc.destroy(start.base());
+				_alloc.destroy(&(*start));
 				*start++ = *begin++;
 			}
-			return (start.base());
+			return (start);
 		}
 
 
 		/*
 		** this private function will copy elements between [first, last(,
-		** starting at the start - 1 location.
+		** starting at the end - 1 location.
 		** In the destination places, we know that there is already objects
 		** constructed.
 		**
 		** note: the copy starts from the end of the range first-last
 		*/
 		void
-		_copy_backwards(iterator first, iterator last, iterator start)
+		_copy_backwards(iterator first, iterator last, iterator end)
 		{
-			while (--last >= first)
+			while (last > first)
 			{
-				--start;
-				_alloc.destroy(start.base());
-				_alloc.construct(start.base(), *last);
+				--last;
+				--end;
+				_alloc.destroy(end.base());
+				_alloc.construct(end.base(), *last);
 			}
 		}
 		
@@ -726,17 +733,6 @@ namespace ft
 		{
 			for (;first != last; ++first)
 				_alloc.destroy(first);
-		}
-
-		/*
-		** this private function will throw an exception if the requested index
-		** is out of range.
-		*/
-		void
-		_checkIndex(size_t n)
-		{
-			if (n >= size())
-				throw (std::out_of_range("vector"));
 		}
 	};
 

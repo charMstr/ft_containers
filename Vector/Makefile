@@ -6,7 +6,7 @@
 #    By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/27 17:46:05 by charmstr          #+#    #+#              #
-#    Updated: 2021/01/30 04:11:36 by charmstr         ###   ########.fr        #
+#    Updated: 2021/02/05 09:47:10 by charmstr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,10 @@ HPP_FILES = vector\
 			ft_random_access_iterator\
 			ft_iterator\
 			ft_reverse_iterator\
-			ft_utils
+			ft_utils\
+			deque_iterator\
+			deque\
+			stack
 
 INCLUDES := $(patsubst %, $(INCLUDE_PATH_PROJECT)%.hpp, $(HPP_FILES))
 INCLUDES += sources_tests/functions_tests.hpp
@@ -79,7 +82,9 @@ INCLUDES += sources_tests/functions_tests.hpp
 SRC_FILES =	main\
 			tests_random_access_iterator\
 			tests_vector\
-			tests_reverse_iterator
+			tests_reverse_iterator\
+			tests_deque\
+			tests_stack
 	
 SRC = $(patsubst %, $(SRC_PATH)%.cpp, $(SRC_FILES))
 OBJ = $(patsubst %, $(OBJ_PATH)%.o, $(basename $(notdir $(SRC))))

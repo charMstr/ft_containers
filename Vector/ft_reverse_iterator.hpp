@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/29 15:13:06 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/30 09:13:06 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/04 18:21:21 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "ft_iterator.hpp"
 # include "ft_random_access_iterator.hpp"
+# include "deque_iterator.hpp"
 
 # ifndef DEBUG
 #  define DEBUG 0
@@ -76,7 +77,7 @@ namespace ft
 	*/	
 		public:
 		//construct a reverse iterator object, points to fuckall
-		reverse_iterator() : _current(nullptr) {}
+		reverse_iterator() : _current() {}
 
 		//construct a reverse iterator from an randomaccessiterator
 		reverse_iterator(Iterator x) : _current(x) {}
@@ -111,6 +112,20 @@ namespace ft
 				"conversion operator(reverse_iterator)" << \
 				"\033[0m" << std::endl;	
 			return (reverse_iterator<ft::random_access_iterator<const T> >(_current));
+		}
+
+		//conversion from non const to const type that will work specifically 
+		//for deque_iterator type
+		template <typename T, size_t buff_size>
+		operator
+		reverse_iterator<ft::deque_iterator<const T, buff_size> >() const
+		{
+			if (DEBUG)
+				//std::cout << __PRETTY_FUNCTION__ << std::endl;
+				std::cout << "\033[34m" << \
+				"conversion operator(reverse_iterator)" << \
+				"\033[0m" << std::endl;	
+			return (reverse_iterator<ft::deque_iterator<const T, buff_size> >(_current));
 		}
 
 		//destructor
