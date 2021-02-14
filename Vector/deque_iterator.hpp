@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 14:30:08 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 21:05:18 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/10 14:55:40 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 # define DEQUE_ITERATOR_HPP
 
 # include "ft_iterator.hpp"
+
 # ifndef DEBUG
 #  define DEBUG 0
 # endif
 
-# include <iostream>
 # if defined DEBUG && DEBUG
 #  include <iostream>
 # endif
@@ -124,7 +124,7 @@ namespace ft
 			if (DEBUG)
 				//std::cout << __PRETTY_FUNCTION__ << std::endl;
 				std::cout << "\033[34m" << \
-				"conversion operator(random_access_iterator)" << \
+				"conversion operator(deque_iterator)" << \
 				"\033[0m" << std::endl;	
 			return (deque_iterator<const T, buff_size>(*this));
 		}

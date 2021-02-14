@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/15 21:24:00 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 22:15:17 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/11 12:31:33 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ void	test_begin_vs_const_begin(void)
 	//conversion from normal iterator to const_iterator OK
 	ft::vector<int>::const_iterator ft_const_it1 = ft_cont.begin();
 	std::vector<int>::const_iterator std_const_it1 = std_cont.begin();
+
 	//(void)ft_const_it1;
 	(void)std_const_it1;
 	
@@ -110,6 +111,15 @@ void	test_begin_vs_const_begin(void)
 
 	(void)ft_const_it2;
 	(void)std_const_it2;
+
+	ft::vector<int>::const_iterator ft_const_it3(ft_it1); //conversion OK
+	std::vector<int>::const_iterator std_const_it3(std_it1); //conversion OK
+
+	//ft::vector<int>::iterator ft_it3(ft_const_it3); //no conversion OK
+	//std::vector<int>::iterator std_it3(std_const_it3); //no conversion OK
+
+	(void)ft_const_it3;
+	(void)std_const_it3;
 }
 
 void _test_reserve(size_t initial_size, size_t new_size)

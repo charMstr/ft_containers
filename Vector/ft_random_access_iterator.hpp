@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 00:16:32 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/30 14:39:34 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/11 12:52:06 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ namespace ft
 		}
 
 		//copy constructor from a raw pointer: private
-		random_access_iterator(pointer ptr) : _ptrToElem(ptr)
+		random_access_iterator(const pointer ptr) : _ptrToElem(ptr)
 		{
 			if (DEBUG)
 				//std::cout << __PRETTY_FUNCTION__ << std::endl;
@@ -95,7 +95,7 @@ namespace ft
 		//conversion to another type, in our case the other type is when
 		//we instanciate the template with "const" (totally different type
 		//from the compiler's perspective).
-		operator random_access_iterator<const T>() const
+		operator random_access_iterator<T const>() const
 		{
 			if (DEBUG)
 				//std::cout << __PRETTY_FUNCTION__ << std::endl;

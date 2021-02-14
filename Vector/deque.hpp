@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 14:31:36 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 23:22:56 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/10 20:59:57 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Deaue: iterators section
+	** Deque: iterators section
 	** ********************************************************************
 	*/
 		//Returns an iterator pointing to the first element in the vector.
@@ -347,7 +347,9 @@ namespace ft
 	*/
 		//range (1)
 		template <class InputIterator>
-		void assign (InputIterator first, InputIterator last)
+		void assign (InputIterator first, 
+			typename ft::enable_if< is_iterator<InputIterator>::value &&
+			is_input_iterator<InputIterator>::value, InputIterator>::type last)
 		{
 			clear();
 			difference_type size;

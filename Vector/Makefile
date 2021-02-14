@@ -6,7 +6,7 @@
 #    By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/27 17:46:05 by charmstr          #+#    #+#              #
-#    Updated: 2021/02/05 09:47:10 by charmstr         ###   ########.fr        #
+#    Updated: 2021/02/11 13:27:23 by charmstr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,7 +64,9 @@ HPP_FILES = vector\
 			ft_utils\
 			deque_iterator\
 			deque\
-			stack
+			stack\
+			list
+# MISSING QUEUE!!!
 
 INCLUDES := $(patsubst %, $(INCLUDE_PATH_PROJECT)%.hpp, $(HPP_FILES))
 INCLUDES += sources_tests/functions_tests.hpp
@@ -84,7 +86,9 @@ SRC_FILES =	main\
 			tests_vector\
 			tests_reverse_iterator\
 			tests_deque\
-			tests_stack
+			tests_stack\
+			tests_list
+#missing queue !!
 	
 SRC = $(patsubst %, $(SRC_PATH)%.cpp, $(SRC_FILES))
 OBJ = $(patsubst %, $(OBJ_PATH)%.o, $(basename $(notdir $(SRC))))

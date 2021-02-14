@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/09 16:25:20 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/11 01:57:15 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/14 02:36:49 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void display_ft_list(ft::list<T> &ft_cont)
 {
 	std::cout << std::endl << "FT CONTENT:" << std::endl;
 	std::cout << "size: " << ft_cont.size() << std::endl;
+	std::cout << "empty: " << ft_cont.empty() << std::endl;
 	typename ft::list<T>::iterator ft_it = ft_cont.begin();
 	for (; ft_it != ft_cont.end(); ft_it++)
 	{
@@ -47,6 +48,7 @@ void display_std_list(std::list<T> &std_cont)
 {
 	std::cout << std::endl << "STD CONTENT:" << std::endl;
 	std::cout << "size: " << std_cont.size() << std::endl;
+	std::cout << "empty: " << std_cont.empty() << std::endl;
 	typename std::list<T>::iterator std_it = std_cont.begin();
 	for (; std_it != std_cont.end(); std_it++)
 	{
@@ -272,12 +274,18 @@ void	tests_iterator_conversions(void)
 //	*it_const = 12;					//cannot assign: OK
 //	it_const = std_cont1.begin();	//cannot compile: OK
 //	it = it_const;					//cannot compile: OK
+	//conversion from a const to a non const.
+	std::list<int>::const_iterator it_const2(it); //conversion OK
+	assert(*it_const2 == 12);
+	//*it_const2 = 13; // not assignable, OK
+	//std::list<int>::iterator it2(it_const2); //no conversion OK
 
-	std::list<int> ft_cont1;
-	std::list<const int> ft_cont2;
+	//////////////////////////////////////////////////////////
+	ft::list<int> ft_cont1(2, 3);
+	ft::list<const int> ft_cont2(3, 3);
 
-	std::list<int>::iterator ft_it;
-	std::list<const int>::iterator ft_it_const;
+	ft::list<int>::iterator ft_it = ft_cont1.begin();
+	ft::list<const int>::iterator ft_it_const = ft_cont2.begin();
 	ft_it = ft_cont1.begin();
 //	ft_it = ft_cont2.begin();		//cannot compile: OK
 	ft_it_const = ft_cont2.begin();
@@ -285,6 +293,11 @@ void	tests_iterator_conversions(void)
 //	*ft_it_const = 12;				//cannot assign: OK
 //	ft_it_const = ft_cont1.begin();	//cannot compile: OK
 //	ft_it = ft_it_const;			//cannot compile: OK
+	//conversion from a const to a non const.
+	ft::list<int>::const_iterator ft_it_const2(ft_it);
+	assert(*ft_it_const2 == 12); // OK
+	// *ft_it_const2 = 13; // not assigble, OK
+	//ft::list<int>::iterator ft_it3(ft_it_const2); //no conversion OK
 }
 
 void 	test_reverse_iteration(size_t size)
@@ -394,8 +407,6 @@ void tests_insert_one(size_t size, size_t offset)
 	}
 	ft_it = ft_cont.insert(ft_it, 42);
 	std_it = std_cont.insert(std_it, 42);
-	std::cout << "*ft_it = " << *ft_it << std::endl;
-	std::cout << "*std_it = " << *std_it << std::endl;
 	assert(*ft_it == *std_it);
 	//display_ft_list<int>(ft_cont);
 	//display_std_list<int>(std_cont);
@@ -488,7 +499,6 @@ void tests_insert_range(size_t size, size_t position, size_t size2, size_t offse
 
 void tests_insert(void)
 {
-	/*
 	//ONE INSERTION
 	//inserting in an empty list
 	tests_insert_one(0,0);
@@ -502,7 +512,6 @@ void tests_insert(void)
 	//insert_oneing in a non empty list, at the end.
 	tests_insert_one(2,2);
 	tests_insert_one(3,3);
-	*/
 
 	//FILL INSERTION
 	//inserting in an empty list: 0
@@ -672,8 +681,8 @@ void	test_list_resize(size_t initial_size, size_t new_size)
 	}	
 	ft_cont.resize(new_size, 42);
 	std_cont.resize(new_size, 42);
-	display_ft_list<int>(ft_cont);
-	display_std_list<int>(std_cont);	
+	//display_ft_list<int>(ft_cont);
+	//display_std_list<int>(std_cont);	
 	compare_list<int>(std_cont, ft_cont);
 }
 
@@ -692,6 +701,535 @@ void	tests_resize(void)
 	test_list_resize(14, 12);
 }
 
+void 	test_splice1(size_t initial_size1, size_t initial_size2, size_t position1)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < initial_size1; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+	}	
+
+	ft::list<int> ft_cont2;
+	std::list<int> std_cont2;	
+	for (size_t i = 0; i < initial_size2; i++)
+	{
+		ft_cont2.push_back(i + 42);	
+		std_cont2.push_back(i + 42);	
+	}	
+	//make sure position is not out of range.d
+	position1 = std::min(position1, initial_size1);
+
+	ft::list<int>::iterator ft_it = ft_cont1.begin();
+	std::list<int>::iterator std_it = std_cont1.begin();
+	for (size_t i = 0; i < position1; i++)
+	{
+		ft_it++;
+		std_it++;
+	}
+	ft_cont1.splice(ft_it, ft_cont2);
+	std_cont1.splice(std_it, std_cont2);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+	//display_ft_list<int>(ft_cont2);
+	//display_std_list<int>(std_cont2);	
+	compare_list<int>(std_cont2, ft_cont2);
+}
+
+void 	test_splice2(size_t initial_size1, size_t initial_size2, \
+		size_t position1, size_t position2)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < initial_size1; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+	}	
+
+	ft::list<int> ft_cont2;
+	std::list<int> std_cont2;	
+	for (size_t i = 0; i < initial_size2; i++)
+	{
+		ft_cont2.push_back(i + 42);	
+		std_cont2.push_back(i + 42);	
+	}	
+	//make sure position is not out of range.
+	position1 = std::min(position1, initial_size1);
+	ft::list<int>::iterator ft_it = ft_cont1.begin();
+	std::list<int>::iterator std_it = std_cont1.begin();
+	for (size_t i = 0; i < position1; i++)
+	{
+		ft_it++;
+		std_it++;
+	}
+
+	//make sure position is not out of range.
+	position2= std::min(position2, initial_size2);
+	if (position2 == initial_size2 && initial_size2 != 0)
+		position2--; //avoid using end as the element we extract from list2.
+	ft::list<int>::iterator ft_it2 = ft_cont2.begin();
+	std::list<int>::iterator std_it2 = std_cont2.begin();
+	for (size_t i = 0; i < position2; i++)
+	{
+		ft_it2++;
+		std_it2++;
+	}
+	ft_cont1.splice(ft_it, ft_cont2, ft_it2);
+	std_cont1.splice(std_it, std_cont2, std_it2);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+	//display_ft_list<int>(ft_cont2);
+	//display_std_list<int>(std_cont2);	
+	compare_list<int>(std_cont2, ft_cont2);
+}
+
+void 	test_splice3(size_t initial_size1, size_t initial_size2, \
+		size_t position1, size_t range1, size_t range2)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < initial_size1; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+	}	
+
+	ft::list<int> ft_cont2;
+	std::list<int> std_cont2;	
+	for (size_t i = 0; i < initial_size2; i++)
+	{
+		ft_cont2.push_back(i + 42);	
+		std_cont2.push_back(i + 42);	
+	}	
+	//make sure position is not out of range.
+	position1 = std::min(position1, initial_size1);
+	ft::list<int>::iterator ft_it = ft_cont1.begin();
+	std::list<int>::iterator std_it = std_cont1.begin();
+	for (size_t i = 0; i < position1; i++)
+	{
+		ft_it++;
+		std_it++;
+	}
+
+	//make sure the range1 and range2 are within the initial_size2.
+	range2 = std::min(range2, initial_size2);
+	range1 = std::min(range2, range1);
+	ft::list<int>::iterator ft_start = ft_cont2.begin();
+	std::list<int>::iterator std_start = std_cont2.begin();
+	for (size_t i = 0; i < range1; i++)
+	{
+		ft_start++;
+		std_start++;
+	}
+	ft::list<int>::iterator ft_end  = ft_cont2.begin();
+	std::list<int>::iterator std_end = std_cont2.begin();
+	for (size_t i = 0; i < range2; i++)
+	{
+		ft_end ++;
+		std_end++;
+	}
+	ft_cont1.splice(ft_it, ft_cont2, ft_start, ft_end);
+	std_cont1.splice(std_it, std_cont2, std_start, std_end);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+	//display_ft_list<int>(ft_cont2);
+	//display_std_list<int>(std_cont2);	
+	compare_list<int>(std_cont2, ft_cont2);
+}
+
+void	tests_splice(void)
+{
+	// (1) //
+	//first container is EMPTY, second is EMPTY
+	test_splice1(0, 0, 1);	
+	//first container is NOT empty, second is EMPTY
+	test_splice1(1, 0, 1);	
+	//first container is EMPTY, second is NOT empty
+	test_splice1(0, 1, 1);	
+	//first container is NOT empty, second is NOT empty
+	test_splice1(1, 1, 0);	 //insert at the begining
+	test_splice1(1, 1, 1);	 //insert at the end
+	test_splice1(3, 2, 1);	 //insert in the middle
+
+	// (2) // args: size1, size2, position1, position2
+	//first container is EMPTY, second container is EMPTY
+	//note: the std list goes wrong if we provide an empty container2
+	//test_splice2(0, 0, 1, 0);	
+	//first container is EMPTY, second container is NOT empty.
+	test_splice2(0, 3, 0, 0);	
+	test_splice2(0, 3, 0, 1);	
+	test_splice2(0, 3, 0, 2);	
+	//first container is NOT empty, second container is NOT empty
+	test_splice2(5, 3, 0, 0);	
+	test_splice2(5, 3, 2, 1);	
+	test_splice2(5, 3, 5, 2);	
+
+	// (3) 
+	//first container is EMPTY, second container is EMPTY
+	test_splice3(0, 0, 0, 0, 0);
+	//first container is EMPTY, second container is NOT empty, null range
+	test_splice3(0, 1, 0, 0, 0);
+	//first container is EMPTY, second container is NOT empty, valid range
+	test_splice3(0, 1, 0, 0, 1);
+	//first container is NOT empty, second container is NOT empty, valid range
+	test_splice3(3, 1, 0, 0, 1);
+	test_splice3(3, 1, 2, 0, 1);
+	test_splice3(3, 1, 3, 0, 1);
+	//first container is NOT empty, second is NOT empty, range in the middle
+	test_splice3(3, 5, 0, 0, 2);
+	test_splice3(3, 5, 2, 2, 4);
+	test_splice3(3, 5, 3, 2, 5);
+}
+
+void	test_remove_val(size_t size, int val)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+		ft_cont1.push_front(i);	
+		std_cont1.push_front(i);	
+	}	
+	ft_cont1.remove(val);
+	std_cont1.remove(val);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+}
+
+template < typename T >
+bool remove_if(T  i)
+{
+	return ( i >= 2 && i < 5);	
+}
+
+
+void test_remove_if(size_t size)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+		ft_cont1.push_front(i);	
+		std_cont1.push_front(i);	
+	}	
+	ft_cont1.remove_if(remove_if<int>);
+	std_cont1.remove_if(remove_if<int>);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+}
+
+void	tests_remove(void)
+{
+	//NORMAL REMOVE
+	//trying to remove on the extremities
+	test_remove_val(13, 12);	
+	//trying to remove in the middle
+	test_remove_val(13, 10);	
+	//trying to remove but not found
+	test_remove_val(12, 13);	
+	//trying to remove in an empty container
+	test_remove_val(0, 1);
+
+	//REMOVE IF ( removing between 2 and 5).
+	test_remove_if(13);	
+	test_remove_if(6);	
+	test_remove_if(5);	
+	test_remove_if(3);	
+	test_remove_if(2);	
+	test_remove_if(1);
+}
+
+void test_list_reverse(size_t size)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+	}	
+	ft_cont1.reverse();
+	std_cont1.reverse();
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+	if (size > 0)
+	{
+		assert(ft_cont1.front() == std_cont1.front());
+		assert(ft_cont1.back() == std_cont1.back());
+	}
+}
+
+void tests_list_reverse(void)
+{
+	//should not do anything when size is less than two
+	test_list_reverse(0);
+	test_list_reverse(1);
+	test_list_reverse(2);
+	test_list_reverse(8);
+}
+
+void	test_list_sort(size_t initial_size)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < initial_size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+		ft_cont1.push_front(i);	
+		std_cont1.push_front(i);	
+	}		
+	std_cont1.sort();
+	ft_cont1.sort();
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+}
+
+template< typename T >
+bool comparison(T i1, T &i2)
+{
+	return (i1 < i2);
+}
+
+void test_list_sort_cmp(size_t initial_size)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < initial_size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+		ft_cont1.push_front(i);	
+		std_cont1.push_front(i);	
+	}		
+	std_cont1.sort(comparison<int>);
+	ft_cont1.sort(comparison<int>);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+}
+
+void tests_list_sort(void)
+{
+	//test_list_sort(0); //nothing should happen if size is less than 2.
+	test_list_sort(1);
+	test_list_sort(2);
+	test_list_sort(4);
+	test_list_sort(9);
+	test_list_sort_cmp(1);
+	test_list_sort_cmp(2);
+	test_list_sort_cmp(4);
+	test_list_sort_cmp(9);
+}
+
+void test_unique(size_t size)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+		ft_cont1.push_front(i);	
+		std_cont1.push_front(i);	
+	}
+	std_cont1.sort();
+	ft_cont1.sort();
+	std_cont1.unique();
+	ft_cont1.unique();
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+}
+
+bool unique_pred(int i, int j)
+{
+	return (i == j + 1);
+}
+
+void test_unique_pred(size_t size)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < size; i++)
+	{
+		ft_cont1.push_back(i);	
+		std_cont1.push_back(i);	
+		ft_cont1.push_front(i);	
+		std_cont1.push_front(i);	
+	}
+	std_cont1.unique(unique_pred);
+	ft_cont1.unique(unique_pred);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+}
+
+void tests_unique(void)
+{
+	test_unique(0);	
+	test_unique(1);	
+	test_unique(2);	
+	test_unique(6);	
+
+	test_unique_pred(0);
+	test_unique_pred(1);
+	test_unique_pred(2);
+	test_unique_pred(6);
+}
+
+void test_list_merge(size_t size1, size_t size2)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = 0; i < size1; i++)
+	{
+		ft_cont1.push_back(i * 2);	
+		std_cont1.push_back(i * 2);	
+	}
+	ft::list<int> ft_cont2;
+	std::list<int> std_cont2;	
+	for (size_t i = 0; i < size2; i++)
+	{
+		ft_cont2.push_back(i * 3);	
+		std_cont2.push_back(i * 3);	
+	}
+	std_cont1.merge(std_cont2);
+	ft_cont1.merge(ft_cont2);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+	compare_list<int>(std_cont2, ft_cont2);
+}
+
+template< typename T >
+bool comparison2(T i1, T &i2)
+{
+	return (i1 < i2);
+}
+
+void test_list_merge_comp(size_t size1, size_t size2, size_t offset1, \
+		size_t offset2)
+{
+	ft::list<int> ft_cont1;
+	std::list<int> std_cont1;	
+	for (size_t i = offset1; i < (size1 * 2) + offset1; i += 2)
+	{
+		ft_cont1.push_back(i + 2);	
+		std_cont1.push_back(i + 2);	
+	}
+	ft::list<int> ft_cont2;
+	std::list<int> std_cont2;	
+	for (size_t i = offset2; i < size2 * 2 + offset2; i += 2)
+	{
+		ft_cont2.push_back(i + 2);	
+		std_cont2.push_back(i + 2);	
+	}
+	//display_ft_list<int>(ft_cont1);
+	std_cont1.merge(std_cont2, comparison2<int>);
+	ft_cont1.merge(ft_cont2, comparison2<int>);
+	//display_ft_list<int>(ft_cont1);
+	//display_std_list<int>(std_cont1);	
+	compare_list<int>(std_cont1, ft_cont1);
+	compare_list<int>(std_cont2, ft_cont2);
+}
+
+void tests_list_merge(void)
+{
+	//just merge
+	test_list_merge(0, 0);
+	test_list_merge(0, 1);
+	test_list_merge(0, 2);
+	test_list_merge(1, 0);
+	test_list_merge(2, 0);
+	test_list_merge(1, 1);
+	test_list_merge(2, 2);
+	test_list_merge(3, 2);
+	test_list_merge(2, 3);
+	test_list_merge(3, 3);
+
+	//merge with predicate
+	test_list_merge_comp(2, 3, 0, 0);
+	test_list_merge_comp(2, 3, 1, 0);
+	test_list_merge_comp(2, 3, 2, 0);
+	test_list_merge_comp(2, 3, 3, 0);
+	test_list_merge_comp(2, 3, 4, 0);
+	test_list_merge_comp(2, 3, 0, 1);
+	test_list_merge_comp(2, 3, 0, 2);
+	test_list_merge_comp(2, 3, 0, 3);
+	test_list_merge_comp(2, 3, 0, 4);
+}
+
+
+void list_test_relational_operators(size_t initial_size)
+{	
+	std::list<int> std_cont1;
+	std::list<int> std_cont2;
+	ft::list<int> ft_cont1;
+	ft::list<int> ft_cont2;
+
+	for (size_t i = 0; i < initial_size; i++)
+	{
+		std_cont1.push_back(42 + i);	
+		ft_cont1.push_back(42 + i);
+		std_cont2.push_back(42 + i);	
+		ft_cont2.push_back(42 + i);
+	}	
+	assert(std_cont1 == std_cont2);
+	assert(ft_cont1 == ft_cont2);
+
+	assert(std_cont1 <= std_cont2);
+	assert(ft_cont1 <= ft_cont2);
+
+	assert(std_cont1 >= std_cont2);
+	assert(ft_cont1 >= ft_cont2);
+
+	std_cont1.push_back(2);
+	ft_cont1.push_back(2);
+
+	assert(std_cont1 != std_cont2);
+	assert(ft_cont1 != ft_cont2);
+
+	assert(std_cont1 > std_cont2);
+	assert(ft_cont1 > ft_cont2);
+
+	assert(std_cont2 < std_cont1);
+	assert(ft_cont2 < ft_cont1);
+
+	assert(std_cont2 <= std_cont1);
+	assert(ft_cont2 <= ft_cont1);
+
+	std_cont2.push_back(2);
+	ft_cont2.push_back(2);
+	std_cont2.push_back(2);
+	ft_cont2.push_back(2);
+
+	assert(std_cont1 != std_cont2);
+	assert(ft_cont1 != ft_cont2);
+
+	assert(std_cont1 < std_cont2);
+	assert(ft_cont1 < ft_cont2);
+
+	assert(std_cont2 > std_cont1);
+	assert(ft_cont2 > ft_cont1);
+
+	assert(std_cont2 >= std_cont1);
+	assert(ft_cont2 >= ft_cont1);
+}
+
 void tests_list(void)
 {	
 	tests_iterator_conversions();
@@ -706,6 +1244,13 @@ void tests_list(void)
 	tests_erase();
 	tests_swap();
 	tests_resize();
+	tests_splice();
+	tests_remove();
+	tests_list_reverse();
+	tests_list_sort();
+	tests_unique();
+	tests_list_merge();
+	list_test_relational_operators(12);
 
 	std::cout << "\033[32m [ OK ]\033[m" << std::endl;	
 }

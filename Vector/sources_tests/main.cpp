@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 04:37:30 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 22:16:42 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/11 13:29:19 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int	main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 	introduce_test(test_name3);
 	tests_vector();
 	end_test();
-	*/
 
 	char test_name4[] = "ft_deque";
 	introduce_test(test_name4);
@@ -54,6 +53,13 @@ int	main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 	char test_name5[] = "ft_stack";
 	introduce_test(test_name5);
 	tests_stack();
+	end_test();
+
+	//should do the same for queue...
+	*/
+	char test_name6[] = "ft_list";
+	introduce_test(test_name6);
+	tests_list();
 	end_test();
 	
     return (0);

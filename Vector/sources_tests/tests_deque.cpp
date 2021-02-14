@@ -6,12 +6,11 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/31 06:35:00 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 23:29:51 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/09 16:27:04 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "functions_tests.hpp"
-#include <iterator>
 
 template <typename T>
 void compare_std_ft_cont(std::deque<T> &std_cont, ft::deque<T> &ft_cont)

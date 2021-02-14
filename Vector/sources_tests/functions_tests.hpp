@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 04:59:05 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 09:50:49 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/10 17:45:00 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define FUNCIONS_TESTS_HPP
 
 #include <iostream>
+#include <iterator>
 
 #include <vector>
 #include "../ft_random_access_iterator.hpp"
@@ -27,6 +28,7 @@
 # include "../stack.hpp"
 
 # include <list>
+# include "../list.hpp"
 
 #include <assert.h>
 # include <exception>
@@ -42,11 +44,13 @@ void	tests_deque(void);
 
 void	tests_stack(void);
 
+void	tests_list(void);
+
 class test_class
 {
 	public:
 	int haha;	
-//	test_class()  ;
+	test_class() : haha(int()) {}
 };
 
 #endif

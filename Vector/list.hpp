@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 16:30:10 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/11 01:56:39 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/14 02:52:07 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ namespace ft
 	*/
 		private:
 		//the node of the list, containing the type in question.
-		typedef ft::Node_list<T, Alloc>						node_type;
+		typedef ft::Node_list< T >						node_type;
 		typedef node_type*									node_pointer;
 		typedef std::allocator<node_type> 					node_allocator_type;
 
@@ -66,9 +66,9 @@ namespace ft
 		typedef typename allocator_type::const_pointer		const_pointer;	
 
 		//ITERATORS
-		typedef typename ft::list_iterator<T> iterator;
-		typedef typename ft::list_iterator<const T> const_iterator;
-		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
+		typedef typename ft::list_iterator<T, node_pointer> iterator;
+		typedef typename ft::list_iterator<T const, node_pointer> const_iterator;
+		typedef typename ft::reverse_iterator<iterator>		reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 		//OTHER
@@ -226,7 +226,7 @@ namespace ft
 		}
 
 		//Returns whether the vector is empty (i.e. whether its size is 0).
-		bool		empty() const { return (_sentinel->next == _sentinel); }
+		bool		empty() const { return (_size == 0); }
 
 		//Returns the number of elements in the vector.
 		size_type	size() const { return _size; }
@@ -484,49 +484,327 @@ namespace ft
 	** List: Operations functions section
 	** ********************************************************************
 	*/
- //TODO(Wed 10/02/2021 at 16:40:43) 
 		//entire list (1)	
-		void splice (iterator position, list& x);
- //TODO(Wed 10/02/2021 at 16:40:43) 
+		void splice (iterator position, list& x)
+		{
+			if (x._size == 0)
+				return ;
+			node_pointer insertion_point = position.get_ptr();
+			node_pointer first_x = x._sentinel->next;
+			node_pointer last_x = x._sentinel->previous;
+			insertion_point->previous->next = first_x;
+			first_x->previous = insertion_point->previous;
+			last_x->next = insertion_point;
+			insertion_point->previous = last_x;
+			_size += x._size;
+			//emptying x
+			x._sentinel->next = x._sentinel;
+			x._sentinel->previous = x._sentinel;
+			x._size = 0;
+		}
+
+		//last parameter represent a single element to remove from x.
 		//single element (2)	
-		void splice (iterator position, list& x, iterator i);
- //TODO(Wed 10/02/2021 at 16:40:43) 
+		void splice (iterator position, list& x, iterator i)
+		{
+			if (x._size == 0)
+				return ;
+			node_pointer extracted = i.get_ptr();
+			extracted->previous->next = extracted->next;
+			extracted->next->previous = extracted->previous;
+			x._size -= 1;
+			node_pointer insertion_point = position.get_ptr();
+			insertion_point->previous->next = extracted;
+			extracted->previous = insertion_point->previous;
+			extracted->next = insertion_point;
+			insertion_point->previous = extracted;
+			_size += 1;
+		}
+
 		//element range (3)	
-		void splice (iterator position, list& x, iterator first, iterator last);
+		void splice (iterator position, list& x, iterator first, iterator last)
+		{
+			size_type dist;
+			ft::distance(first, last, dist);
+			if (!dist) //nothing to extract
+				return ;
+			node_pointer extract_first = first.get_ptr();	
+			node_pointer extract_last = last.get_ptr()->previous;
+			//reconnecting the x list.
+			extract_first->previous->next = extract_last->next;
+			extract_last->next->previous = extract_first->previous;
+			x._size -= dist;
+			//inserting in self
+			node_pointer insertion_point = position.get_ptr();	
+			insertion_point->previous->next = extract_first;
+			extract_first->previous =insertion_point->previous;
+			extract_last->next = insertion_point;
+			insertion_point->previous = extract_last;
+			_size += dist;
+		}
 
- //TODO(Wed 10/02/2021 at 16:40:43) 
-		void remove (const value_type& val);
+		void remove (const value_type& val)
+		{
+			node_pointer current = _sentinel->next;
+			node_pointer tmp;
+			while (current != _sentinel)
+			{
+				tmp = current;
+				current = current->next;
+				if (tmp->data == val)
+				{
+					_alloc.destroy(&tmp->data);
+					tmp->previous->next = current;
+					current->previous = tmp->previous;
+					_alloc_node.deallocate(tmp, 1);
+					_size -= 1;
+				}
+			}
+		}
 
- //TODO(Wed 10/02/2021 at 16:40:43) 
 		template <class Predicate>
-		void remove_if (Predicate pred);
+		void remove_if (Predicate pred)
+		{
+			node_pointer current = _sentinel->next;
+			node_pointer tmp;
+			while (current != _sentinel)
+			{
+				tmp = current;
+				current = current->next;
+				if (pred(tmp->data))
+				{
+					_alloc.destroy(&tmp->data);
+					tmp->previous->next = current;
+					current->previous = tmp->previous;
+					_alloc_node.deallocate(tmp, 1);
+					_size -= 1;
+				}
+			}
+		}
 
- //TODO(Wed 10/02/2021 at 16:40:43) 
 		//(1)
-		void unique();
- //TODO(Wed 10/02/2021 at 16:40:43) 
+		//note: only comparing the adjacent elements.
+		void unique()
+		{
+			if (_size < 2)
+				return ;
+			node_pointer second = _sentinel->next->next;
+			while (second != _sentinel)
+			{
+				node_pointer third = second->next;
+				node_pointer first = second->previous;
+				if (second->data == first->data)
+				{
+					first->next = third;		
+					third->previous = first;
+					_alloc.destroy(&second->data);
+					_alloc_node.deallocate(second, 1);
+					_size -= 1;
+				}
+				second = third;
+			}
+		}
+
 		//(2)
 		template <class BinaryPredicate>
-		void unique (BinaryPredicate binary_pred);
+		void unique (BinaryPredicate binary_pred)
+		{
+			if (_size < 2)
+				return ;
+			node_pointer second = _sentinel->next->next;
+			while (second != _sentinel)
+			{
+				node_pointer third = second->next;
+				node_pointer first = second->previous;
+				if (binary_pred(first->data, second->data))
+				{
+					first->next = third;		
+					third->previous = first;
+					_alloc.destroy(&second->data);
+					_alloc_node.deallocate(second, 1);
+					_size -= 1;
+				}
+				second = third;
+			}
+		}
 
- //TODO(Wed 10/02/2021 at 16:40:43) 
 		//(1)
-		void merge (list& x);
- //TODO(Wed 10/02/2021 at 16:40:43) 
+		//note: the two list should already be sorted.
+		void merge (list& x)
+		{
+			if (&x == this)
+				return ;
+			if (x._size == 0)
+				return ;
+			if (_size == 0)
+				swap(x);
+			node_pointer x_current = x._sentinel->next;
+			while (x_current != x._sentinel)
+			{
+				node_pointer x_next = x_current->next;
+				node_pointer current = _sentinel->next;
+				while (current != _sentinel)
+				{
+					if (x_current->data < current->data)
+						break;
+					current = current->next;	
+				}
+				current->previous->next = x_current;
+				x_current->previous = current->previous;
+				x_current->next = current;
+				current->previous = x_current;
+				x._size --;	
+				_size += 1;
+				x_current = x_next;
+			}
+			//closing x which is now empty
+			x._sentinel->next = x._sentinel;
+			x._sentinel->previous = x._sentinel;
+		}
+
 		//(2)
 		template <class Compare>
-		void merge (list& x, Compare comp);
+		void merge (list& x, Compare comp)
+		{
+			if (&x == this)
+				return ;
+			if (x._size == 0)
+				return ;
+			if (_size == 0)
+				swap(x);
+			node_pointer current = _sentinel->next;
+			node_pointer x_current = x._sentinel->next;
+			node_pointer x_next;
+			while (current != _sentinel)
+			{	
+				while (x_current != x._sentinel)
+				{
+					if (comp(x_current->data, current->data))
+					{
+						x_next = x_current->next;
+						current->previous->next = x_current;
+						x_current->previous = current->previous;
+						x_current->next = current;
+						current->previous = x_current;
+						x._size --;	
+						_size += 1;
+						x_current = x_next;
+					}
+					else
+						break;
+				}
+				current = current->next;
+			}
+			//append whatever is in place of current.
+			while (x_current != x._sentinel)
+			{
+				x_next = x_current->next;
+				current->previous->next = x_current;
+				x_current->previous = current->previous;
+				current->previous = x_current;
+				x_current->next = current;
+				x_current = x_next;
+				x._size --;	
+				_size += 1;
+			}
+			//closing x which is now empty.
+			x._sentinel->next = x._sentinel;
+			x._sentinel->previous = x._sentinel;
+		}
 		
- //TODO(Wed 10/02/2021 at 16:40:43) 
 		//(1)
-		void sort();
- //TODO(Wed 10/02/2021 at 16:40:43) 
-		//(2)
-		template <class Compare>
-		void sort (Compare comp);
+		/*
+		** iterate through the linked list and take each links, reinsert them
+		** between _sentinel->next and _sentinel->previous but in order
+		** (regarding each link's ->data)
+		*/
+		void sort()
+		{
+			if (_size < 2)
+				return ;
+			node_pointer current = _sentinel->next;
+			node_pointer extracted;
+			while (current != _sentinel)
+			{
+				extracted = current;
+				current = current->next;
+				if (extracted->previous == _sentinel) //true means first time.
+				{
+					extracted->next = _sentinel; //closing the list on _sentinel
+					_sentinel->previous = extracted;
+					continue ;//the list contains 2 links: _sentinel & new_node.
+				}
+				node_pointer sniffer = _sentinel->next;
+				while (sniffer != _sentinel)
+				{
+					if (sniffer->data >= extracted->data) //insert here.
+						break;
+					sniffer = sniffer->next;
+				}
+				extracted->next = sniffer;
+				extracted->previous = sniffer->previous;
+				sniffer->previous->next = extracted;
+				sniffer->previous = extracted;
+			}
+		}
 
- //TODO(Wed 10/02/2021 at 16:40:43) 
-		void reverse();
+		//(2)
+		/*
+		** iterate through the linked list and take each links, reinsert them
+		** between _sentinel->next and _sentinel->previous but in order
+		** (regarding each link's ->data)
+		*/
+		template <class Compare>
+		void sort (Compare comp)
+		{
+			if (_size < 2)
+				return ;
+			node_pointer current = _sentinel->next;
+			node_pointer extracted;
+			while (current != _sentinel)
+			{
+				extracted = current;
+				current = current->next;
+				if (extracted->previous == _sentinel) //true means first time.
+				{
+					extracted->next = _sentinel; //closing the list on _sentinel
+					_sentinel->previous = extracted;
+					continue ;//the list contains 2 links: _sentinel & new_node.
+				}
+				node_pointer sniffer = _sentinel->next;
+				while (sniffer != _sentinel)
+				{
+					//predicate, returns true if first goes before second.
+					if (comp(extracted->data, sniffer->data)) //insert here.
+						break;
+					sniffer = sniffer->next;
+				}
+				extracted->next = sniffer;
+				extracted->previous = sniffer->previous;
+				sniffer->previous->next = extracted;
+				sniffer->previous = extracted;
+			}
+		}
+
+		void reverse()
+		{
+			if (_size < 2)
+				return ;
+			node_pointer previous = _sentinel;	
+			node_pointer current = _sentinel->next;
+			node_pointer next;
+			while (current != _sentinel)
+			{
+				next = current->next;
+				current->next = previous;
+				current->previous = next;		
+				previous = current;
+				current = next;
+			}
+			next = _sentinel->next;
+			_sentinel->next = _sentinel->previous;
+			_sentinel->previous = next;
+		}
 	/*
 	** ********************************************************************
 	** List: private helper functions section
@@ -624,10 +902,56 @@ namespace ft
 	** ********************************************************************
 	*/
  	//TODO(Wed 10/02/2021 at 16:40:43) 
+	//(1)	
+	template <class T, class Alloc>
+	bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return (false);			
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	}
+
+	//(2)	
+	template <class T, class Alloc>
+	bool operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+	{
+		return (!operator==(lhs, rhs));
+	}
+
+	//(3)	
+	template <class T, class Alloc>
+	bool operator< (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+	{
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));		
+	}
+
+	//(4)	
+	template <class T, class Alloc>
+	bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+	{
+		return (!operator<(rhs, lhs));
+	}
+
+	//(5)	
+	template <class T, class Alloc>
+	bool operator> (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+	{
+		return (rhs < lhs);
+	}
+
+	//(6)	
+	template <class T, class Alloc>
+	bool operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+	{
+		return (!operator<(lhs, rhs));
+	}
 
  	//TODO(Wed 10/02/2021 at 16:40:43) 
 	template <class T, class Alloc>
-	void swap (list<T,Alloc>& x, list<T,Alloc>& y);
+	void swap (list<T,Alloc>& x, list<T,Alloc>& y)
+	{	
+		return (x.swap(y));
+	}
 }
 
 #endif

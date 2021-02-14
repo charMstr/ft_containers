@@ -6,17 +6,13 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 15:14:11 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/05 22:15:33 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/08 16:32:53 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include <iostream>
-#include <iterator>
-# include <stdexcept>
-# include "ft_iterator.hpp"
 # include "ft_random_access_iterator.hpp"
 # include "ft_reverse_iterator.hpp"
 # include "ft_utils.hpp"

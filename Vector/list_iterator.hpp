@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/09 14:13:33 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/10 22:19:42 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/02/11 13:22:44 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,18 @@
 ** iterator will allow us to do operations belonging to the spectrum of
 ** bidirectional_iterators (basically ++ and -- operations but not + and - and
 ** [] operations).
-** Therefor the iterator_category is set to be bidirectional_iterator_tag.
+** Therefore the iterator_category is set to be bidirectional_iterator_tag.
+**
+** note: Second template parameter was created only so that the nodepointer is
+** always the same: it is not declared relative to the first parameter, it does
+** not depend of it constness. This way, we can convert a list_iterator<T> to
+** a list_iterator<const T>, and when we pass the _ptr, it is always a node
+** pointer of a consistant type (no constness involved).
 */
 
 namespace ft
 {
-	template< typename T >
+	template< typename T, typename NodePointer>
 	class list_iterator : public ft::iterator<std::bidirectional_iterator_tag, T>
 	{
 		protected:
@@ -50,8 +56,7 @@ namespace ft
 
 		protected:
 		typedef list_iterator								iterator;
-		typedef ft::Node_list<T>							node_type;
-		typedef node_type*									node_pointer;
+		typedef	NodePointer									node_pointer;
 	/*
 	** ********************************************************************
 	** list_iterator: data section
@@ -83,7 +88,7 @@ namespace ft
 		//conversion to another type, in our case the other type is when
 		//we instanciate the template with "const" (totally different type
 		//from the compiler's perspective).
-		operator list_iterator<const T>() const
+		operator list_iterator<const T, NodePointer>() const
 		{
 			/*
 			if (DEBUG)
@@ -92,7 +97,7 @@ namespace ft
 				"conversion operator(list_iterator)" << \
 				"\033[0m" << std::endl;	
 				*/
-			return (list_iterator<const T>(_ptr));
+			return (list_iterator<const T, NodePointer>(_ptr));
 		}
 	/*
 	** ********************************************************************
@@ -107,13 +112,13 @@ namespace ft
 	
 		//friended, so that we can compare const and non const types.
 		friend
-		bool operator==(const list_iterator<T> &lhs, const list_iterator<T> &rhs)
+		bool operator==(const list_iterator<T, NodePointer> &lhs, const list_iterator<T, NodePointer> &rhs)
 		{
 			return (lhs._ptr == rhs._ptr);
 		}
 
 		friend
-		bool operator!=(const list_iterator<T> &lhs, const list_iterator<T> &rhs)
+		bool operator!=(const list_iterator<T, NodePointer> &lhs, const list_iterator<T, NodePointer> &rhs)
 		{
 			return !(lhs == rhs);
 		}
