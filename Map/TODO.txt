@@ -1,0 +1,73 @@
+stage:
+- done with the rb_tree_iterator.hpp next and previous should work as expected.
+
+- done with the rb_tree_node.hpp, there is only a value field, in which we
+  should place the pair<key, value>
+ 
+- code rb_tree.hpp class.
+
+
+###############################################################################
+## MAP:
+###############################################################################
+
+- If the container is empty, the returned iterator value shall not be
+  dereferenced. (when calling begin())
+
+- Notice that value_type in map containers is an alias of pair<const key_type,
+  mapped_type>.
+
+- refaire std::pair:
+
+
+Dans le container:
+declarer un rb_tree.
+
+typedef pair<const Key, T> value_type;
+
+SORTING THE MAP:
+Based on ordering property of keys.  Keys need to be
+comparable using < (less than) operator.
+
+Equivalent if !comp(a,b) && !comp(b,a)). No two elements in a set container can
+be equivalent.
+
+###############################################################################
+## RED_BLACK_TREE:
+###############################################################################
+
+- insert_unique() (used in map and set).
+- insert_equal() (used int multimap and multiset).
+
+use a root node. its right and left points to itself at begining.
+so begin() == end()
+
+- begin() should start at root node. if root.left == end() return end()
+	if root.left != end(), return the left-most node.
+
+- end() return &root.
+
+- next(), try to always go right.
+	if right: pointer = pointer.right
+		if possible, try to reach the left most.
+	else
+		go back up, as long as you cant go right no more. until you meet &root,
+		which is end()
+
+- previous(), try always to go left.
+	if left: pointer = pointer.left
+		if right possible, keep going right.
+	else:
+		keep going up in parent, until we made a motion leftward, done if you
+		reach begin().
+
+- if there is only one node in our map (size = 1). its present at root.left
+- if map empty, there is only root (its not even a pointer).
+
+- in reverse_iterator:
+rbegin = root.
+	++operator makes a call to previous.
+	etc.
+rend == begin(). OK
+
+- iterator should be a const iterator! in set and map etc...

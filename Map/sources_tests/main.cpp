@@ -1,3 +1,4 @@
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
@@ -5,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 04:37:30 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/08 12:46:01 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/09 20:01:31 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +28,7 @@ void end_test(void)
 
 int	main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 {
+	/*
 	char test_name1[] = "random access iterators";
 	introduce_test(test_name1);
 	test_random_access_iterator();
@@ -55,6 +57,12 @@ int	main(int argc __attribute__((unused)), char **argv __attribute__((unused)))
 	char test_name6[] = "ft_list";
 	introduce_test(test_name6);
 	tests_list();
+	end_test();
+	*/
+
+	char test_name6[] = "rb_tree";
+	introduce_test(test_name6);
+	tests_rb_tree();
 	end_test();
 	
     return (0);
