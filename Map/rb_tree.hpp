@@ -159,8 +159,11 @@ namespace ft
 		}
 
 		//copy (3)	
-		rb_tree (const rb_tree& x)
+		rb_tree (const rb_tree& x) :
+			_size(0),
+			_alloc_node(node_allocator_type())
 		{
+			_set_up_header();
 			*this = x;
 		}
 
@@ -170,28 +173,28 @@ namespace ft
 			clear();
 		}
 
-		// [Wed 09/06/2021 at 13:48:01]
-		//TODO (charmstr): 
 		//copy (1)
-		rb_tree& operator= (const rb_tree& x)
+		//could not use const for some obscur reasons.
+		rb_tree& operator= (rb_tree& x)
 		{
 			if (this != &x)	
 			{	
 				clear();
 				_alloc = x._alloc;	
 				_alloc_node = x._alloc_node;
+				_size = x._size;
 				if (x.empty())
 					return (*this);
-				_size = x._size;
 				for (const_iterator it = x.begin(); it != x.end(); ++it)
 				{
-					// [Thu 10/06/2021 at 07:07:19]
-					//TODO (charmstr): 
-					;//insert_equal(*it);
+					insert_equal(*it);
 				}
 			}
 			return (*this);
 		}
+
+		
+
 
 	/*
 	** ********************************************************************

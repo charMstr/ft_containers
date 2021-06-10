@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 20:02:01 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/10 14:25:08 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/10 15:45:59 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,6 @@ void	test_rb_tree_default_constructor(void)
 
 void	test_rb_tree_copy_constructor(void)
 {
-	/*
-	ft::rb_tree<int, int, std::less<int> > ft_cont;	
-	ft::rb_tree<int, int, std::less<int> > ft_cont2;	
-	ft_cont = ft_cont2;
 	ft::rb_tree<int, int, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
@@ -39,7 +35,6 @@ void	test_rb_tree_copy_constructor(void)
 	assert(ft_cont2.empty());
 	ft_cont = ft_cont2;
 	assert(ft_cont.empty());
-	*/
 }
 
 void	test_rb_tree_constructors()
@@ -231,13 +226,14 @@ void	test_rb_tree_insert_unique(void)
 void tests_rb_tree(void)
 {	
 	test_rb_tree_constructors();
-
 	test_rb_tree_iterator_conversions();
 	test_rb_tree_iteration();
 
 	test_rb_tree_insert();
 	test_rb_tree_insert_equal();
 	test_rb_tree_insert_unique();
+
+	//NOT DONE YET
 	/*
 	tests_iterator_conversions();
 	tests_list_constructors();

@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/09 16:25:20 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/14 02:36:49 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/10 15:21:53 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,26 @@ void 	test_list_copy_constructor(size_t size)
 	compare_list<int>(std_cont2, ft_cont2);
 }
 
+void 	test_list_copy_constructor_leak_potential(size_t size)
+{
+	ft::list<int> ft_cont;	
+	std::list<int> std_cont;
+	
+	for (size_t i = 0; i < size; i++)
+	{
+		ft_cont.push_back(i + 42);	
+		std_cont.push_back(i + 42);	
+	}
+
+	ft::list<int> ft_cont2;
+	ft_cont = ft_cont2;
+	std::list<int> std_cont2;
+	std_cont = std_cont2;
+	assert(ft_cont.size() == 0);
+	compare_list<int>(std_cont, ft_cont);
+	compare_list<int>(std_cont2, ft_cont2);
+}
+
 void	tests_list_constructors(void)
 {
 	test_list_default_constructor();
@@ -142,6 +162,9 @@ void	tests_list_constructors(void)
 	test_list_copy_constructor(0);
 	test_list_copy_constructor(1);
 	test_list_copy_constructor(13);
+
+	test_list_copy_constructor_leak_potential(0);
+	test_list_copy_constructor_leak_potential(2);
 }
 
 
