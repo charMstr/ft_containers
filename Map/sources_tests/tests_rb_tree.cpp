@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 20:02:01 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/10 15:45:59 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/10 16:21:59 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,45 @@ void	test_rb_tree_copy_constructor(void)
 	assert(ft_cont.empty());
 }
 
+void	test_rb_tree_range_constructor(size_t size)
+{
+	ft::rb_tree<int, int, std::less<int> > ft_cont;	
+	//std::rb_tree<int> std_cont;
+	
+	for (size_t i = 0; i < size; i++)
+		ft_cont.insert_equal(i + 42);	
+
+	ft::rb_tree<int, int, std::less<int> >::iterator ft_it = ft_cont.begin();
+	//from start to end;
+	ft::rb_tree<int, int, std::less<int> > ft_cont2(false, ft_it, ft_cont.end());
+
+	assert(ft_cont2.size() == ft_cont.size());
+
+	int difference_in_size = 0;
+	if (size >= 1)
+	{
+		difference_in_size = 1;
+		ft_it++;
+	}
+	if (size >= 2)
+	{
+		difference_in_size = 2;
+		ft_it++;
+	}
+	//from non start to end
+	ft::rb_tree<int, int, std::less<int> > ft_cont3(false, ft_it, ft_cont.end());
+	assert(ft_cont3.size() == ft_cont.size() - (difference_in_size));
+}
+
 void	test_rb_tree_constructors()
 {
 	test_rb_tree_default_constructor();
 	test_rb_tree_copy_constructor();
+	test_rb_tree_range_constructor(0);
+	test_rb_tree_range_constructor(1);
+	test_rb_tree_range_constructor(2);
+	test_rb_tree_range_constructor(3);
+	test_rb_tree_range_constructor(10);
 }
 
 void	output_int_with_4_char(int num)
@@ -186,7 +221,6 @@ void test_rb_tree_insert(void)
 	ft_cont.insert_equal(34);
 	ft_cont.insert_equal(35);
 	ft_cont.insert_equal(36);
-
 	ft_cont.rb_tree_debug(output_int_with_4_char);
 }
 
@@ -199,6 +233,7 @@ void	test_rb_tree_insert_equal(void)
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(1);
 	assert(ft_cont.size() == 3);
+	ft_cont.rb_tree_debug(output_int_with_4_char);
 }
 
 //tests that we can insert only unique elements (no two same keys possible!).

@@ -78,6 +78,8 @@ namespace ft
 
 		public:
 		//TYPES
+		//the third parameter:
+		typedef Compare		key_compare;
 		//value_type:		the type of elements contained in the Node
 		typedef	Value										value_type;
 		//allocator_type:	the allocator used to allocate memory.
@@ -114,12 +116,12 @@ namespace ft
 		node_type			_header;
 		size_type			_size;
 
-		//the function object to compare keys:
-		Compare				key_compare;
-
 		//allocators.
 		allocator_type		_alloc;
 		node_allocator_type	_alloc_node;
+
+		//comparison		object/function;
+		key_compare			_comp;
 		
 	/*
 	** ********************************************************************
@@ -128,33 +130,37 @@ namespace ft
 	*/
 		public:
 		//default (1)	
-		explicit rb_tree (const allocator_type& alloc = allocator_type()) :
+		explicit rb_tree (const key_compare& comp = key_compare(),
+              const allocator_type& alloc = allocator_type()) :
 			_size(0),
 			_alloc(alloc),
-			_alloc_node(node_allocator_type())
+			_alloc_node(node_allocator_type()),
+			_comp(comp)
 		{
 			_set_up_header();
 		}
 
 		//range (2)	
+		//note: the param call_unique, is used to distinguish call between
+		//insert_unique (map and set), and insert_equal(multimap and multiset).
 		template <class InputIterator>
-		rb_tree (InputIterator first,
+		rb_tree (bool call_unique, InputIterator first,
 			typename ft::enable_if< is_iterator<InputIterator>::value &&
 			is_input_iterator<InputIterator>::value, InputIterator>::type last,
+			const key_compare& comp = key_compare(),
         		const allocator_type& alloc = allocator_type()) :
 			_size(0),
 			_alloc(alloc),
-			_alloc_node(node_allocator_type())
+			_alloc_node(node_allocator_type()),
+			_comp(comp)
 		{
 			_set_up_header();
-			// [Wed 09/06/2021 at 13:53:51]
-			//TODO (charmstr): 
 			for (; first != last; ++first)
 			{
-				//add in the map an equivalent of the node.
-				//should take in account the fact that we have multiple times
-				//a value for the same key.
-				push_back(*first);	
+				if (call_unique)
+					insert_unique(*first);
+				else
+					insert_equal(*first);	
 			}
 		}
 
@@ -169,12 +175,11 @@ namespace ft
 
 		~rb_tree()
 		{
-			std::cout << "caling clear..."  << std::endl;
 			clear();
 		}
 
-		//copy (1)
-		//could not use const for some obscur reasons.
+		//operator = (1)
+		//could not use const for some obscur reasons (problem of constness).
 		rb_tree& operator= (rb_tree& x)
 		{
 			if (this != &x)	
@@ -183,6 +188,7 @@ namespace ft
 				_alloc = x._alloc;	
 				_alloc_node = x._alloc_node;
 				_size = x._size;
+				_comp = x._comp;
 				if (x.empty())
 					return (*this);
 				for (const_iterator it = x.begin(); it != x.end(); ++it)
@@ -193,9 +199,6 @@ namespace ft
 			return (*this);
 		}
 
-		
-
-
 	/*
 	** ********************************************************************
 	** Rb_tree: iterators section
@@ -205,10 +208,6 @@ namespace ft
 		//one that is the leftmost if we did an inorder traversal.
 		iterator				begin()
 		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"begin(vector)" <<
-				"\033[0m" << std::endl;
 			if (!_size)
 				return (end());
 			node_pointer ptr = &_header;
@@ -217,12 +216,14 @@ namespace ft
 			return (ptr);
 		}
 
-		// [Wed 09/06/2021 at 20:24:13]
-		//TODO (charmstr): 
 		const_iterator			begin() const
 		{
-			//!!!! wtf
-			return (end());
+			if (!_size)
+				return (end());
+			node_pointer ptr = &_header;
+			while (ptr->left_child)
+				ptr = ptr->left_child;
+			return (ptr);
 		}
 		
 		//Returns an iterator referring to the past-the-end element in the
@@ -302,10 +303,8 @@ namespace ft
 		t_insert_info insert_unique(const value_type& val)
 		{
 			t_insert_info	insert;
-			node_pointer new_node = _alloc_node.allocate(1);	
-			_alloc.construct(&new_node->data, val);
-			new_node->left_child = nullptr;
-			new_node->right_child = nullptr;
+
+			node_pointer new_node = _create_node(val);
 
 			insert.iter_to_return = new_node;
 			insert.insert_successful = false;
@@ -334,10 +333,8 @@ namespace ft
 		t_insert_info insert_equal(const value_type& val)
 		{
 			t_insert_info	insert;
-			node_pointer new_node = _alloc_node.allocate(1);	
-			_alloc.construct(&new_node->data, val);
-			new_node->left_child = nullptr;
-			new_node->right_child = nullptr;
+
+			node_pointer new_node = _create_node(val);
 
 			insert.iter_to_return = new_node;
 			insert.insert_successful = false;
@@ -555,23 +552,23 @@ namespace ft
 			_header.left_child = &_header;
 		}
 
-		/*
 		//this private helper function will just create a new node for us.
 		node_pointer _create_node(const value_type& val)
 		{
 			node_pointer new_node = _alloc_node.allocate(1);	
 			_alloc.construct(&new_node->data, val);
-			new_node->next = nullptr;
-			new_node->previous = nullptr;
+			new_node->right_child = nullptr;
+			new_node->left_child = nullptr;
+			new_node->color = node_type::RB_RED;
+
 			return (new_node);
 		}
-		*/
 
 		/*
 		** Note: This function will try to insert a new rb_tree_node in the
-		** red/black tree. The insertion's position is decided with the
-		** key_compare function. For each node, if key_compare returns true, go
-		** left, if false 0 go right.
+		** red/black tree. The insertion's position is decided with the _comp
+		** function. For each node, if _comp returns true, go left, if false 0
+		** go right.
 		**
 		** PARAMETERS:
 		** - new_node: It is a new node previously allocated, the one we are
@@ -592,10 +589,10 @@ namespace ft
 				return ;
 			}
 			new_node->parent = _header.left_child;
-			if (key_compare(new_node->data, _header.left_child->data) == true)
+			if (_comp(new_node->data, _header.left_child->data) == true)
 				rb_tree_add_assist(&_header.left_child, \
 						&(_header.left_child->left_child), new_node, insert);
-			else if (key_compare(_header.left_child->data, new_node->data) == true)
+			else if (_comp(_header.left_child->data, new_node->data) == true)
 				rb_tree_add_assist(&_header.left_child, \
 						&(_header.left_child->right_child), new_node, insert);
 			else if (insert.insert_only_if_unique == false)
@@ -619,10 +616,10 @@ namespace ft
 				return;
 			}
 			new_node->parent = *current;
-			if (key_compare(new_node->data, (*current)->data) == true)
+			if (_comp(new_node->data, (*current)->data) == true)
 				rb_tree_add_assist(top_node, &(*current)->left_child, \
 						new_node, insert);
-			else if (key_compare((*current)->data, new_node->data) == true)
+			else if (_comp((*current)->data, new_node->data) == true)
 				rb_tree_add_assist(top_node, &(*current)->right_child, \
 						new_node, insert);
 			else if (insert.insert_only_if_unique == false)
