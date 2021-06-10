@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 00:16:32 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/11 12:52:06 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/08 12:55:39 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ namespace ft
 	** the random access iterator class inherits theoreticaly from the iterator
 	** base class
 	**
-	** @param1: the first template parameter is there so that we can prvide
+	** @param1: the first template parameter is there so that we can provide
 	**			the value_type to the base classe, and more generally the
 	**			value_type "pointed to" by our iterator.
 	*/

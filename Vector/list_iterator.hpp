@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/09 14:13:33 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/11 13:22:44 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/09 20:44:15 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,12 @@
 ** [] operations).
 ** Therefore the iterator_category is set to be bidirectional_iterator_tag.
 **
-** note: Second template parameter was created only so that the nodepointer is
+** note: Second template parameter was created only so that the node_pointer is
 ** always the same: it is not declared relative to the first parameter, it does
-** not depend of it constness. This way, we can convert a list_iterator<T> to
-** a list_iterator<const T>, and when we pass the _ptr, it is always a node
-** pointer of a consistant type (no constness involved).
+** not depend on its constness. This way, we can convert a list_iterator<T>
+** (aka iterator) to a list_iterator<const T> (aka const_iterator), and when we
+** pass the _ptr, it is always a node pointer of a consistant type and the
+** compilater is happy (no constness involved).
 */
 
 namespace ft

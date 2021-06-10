@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/30 14:31:36 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/10 20:59:57 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/09 03:38:28 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -927,7 +927,7 @@ namespace ft
 		{
 			if (lhs.size() != rhs.size())
 				return (false);			
-			return (ft::equal(lhs._start, lhs._end, rhs._start));
+			return (ft::equal(lhs._start, lhs._end, rhs._start, rhs._end));
 		}
 
 		//(3)	

@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 06:38:55 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/29 11:03:58 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/08 13:34:15 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,26 +50,40 @@ namespace ft
 		static const bool value = true;
 	};
 
-	//assumption, size of first1's range is equal to first2's range
+	/*
+	** ********************************************************************
+	** equal: two iterators have their content compared.
+	**
+	** Return: false if the content is not the same, or the range is not the
+	**	same.
+	** ********************************************************************
+	*/
+
 	template< class InputIt1, class InputIt2 >
-	bool equal( InputIt1 first1, InputIt1 last1, InputIt2 first2 )
+	bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)
 	{
-		for (;first1 != last1; first1++)
+		for (;first1 != last1 && first2 != last2; first1++)
 		{
 			if (*first1 != *first2)
 				return (false);
 			first2++;	
 		}
+		if (first1 == last1 && first2 != last2)
+			return (false);
+		if (first1 != last1 && first2 == last2)
+			return (false);
 		return (true);
 	}
 
 	/*
-	** compare lexicographicalie, as long as the types contained in the
-	** containers can be compared
+	** ********************************************************************
+	** lexicographical_compare: compares lexicographicalie, as long as the
+	**	types contained in the containers can be compared.
+	** ********************************************************************
 	*/
 	template <class InputIterator1, class InputIterator2>
-	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
-									InputIterator2 first2, InputIterator2 last2)
+	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
+								InputIterator2 first2, InputIterator2 last2)
 	{
 		while (first1 != last1 && first2 != last2 && *first1 == *first2)
 		{

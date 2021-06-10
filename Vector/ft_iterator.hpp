@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 00:11:31 by charmstr          #+#    #+#             */
-/*   Updated: 2021/01/29 15:12:13 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/08 13:14:49 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ namespace ft
 
 		// If the "sizeof" of the result of calling test<T>(nullptr) is equal to
 		// sizeof(yes), the first overload worked and T has a nested type named
-		// value_type
+		// iterator_category
 		static const bool value = sizeof(test<IsIterator>(nullptr)) == sizeof(yes);
 	};
 

@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 16:30:10 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/14 02:52:07 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/10 05:50:45 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ namespace ft
 	*/
 		private:
 		//the node of the list, containing the type in question.
-		typedef ft::Node_list< T >						node_type;
+		typedef ft::Node_list< T >							node_type;
 		typedef node_type*									node_pointer;
 		typedef std::allocator<node_type> 					node_allocator_type;
 
@@ -66,10 +66,10 @@ namespace ft
 		typedef typename allocator_type::const_pointer		const_pointer;	
 
 		//ITERATORS
-		typedef typename ft::list_iterator<T, node_pointer> iterator;
+		typedef typename ft::list_iterator<T, node_pointer>		iterator;
 		typedef typename ft::list_iterator<T const, node_pointer> const_iterator;
-		typedef typename ft::reverse_iterator<iterator>		reverse_iterator;
-		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
+		typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 		//OTHER
 		typedef typename iterator_traits<iterator>::difference_type difference_type;
@@ -86,6 +86,8 @@ namespace ft
 		allocator_type		_alloc;
 		node_allocator_type	_alloc_node;
 		
+		// [Wed 09/06/2021 at 13:43:54]
+		//TODO (charmstr):  do we free everything when some bad_alloc happens?
 	/*
 	** ********************************************************************
 	** List: constructors, destructor and copy section
@@ -148,9 +150,9 @@ namespace ft
 		{
 			if (this != &x)	
 			{	
+				clear();
 				_alloc = x._alloc;	
 				_alloc_node = x._alloc_node;
-				_size = 0;
 				_build_sentinel();	
 				node_pointer tmp = x._sentinel->next;
 				for (; tmp != x._sentinel; tmp = tmp->next)
@@ -163,7 +165,7 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Deque: iterators section
+	** List: iterators section
 	** ********************************************************************
 	*/
 		//Returns an iterator pointing to the first element in the vector.
@@ -815,7 +817,8 @@ namespace ft
 		//private helper function: builds the sentinel node
 		void _build_sentinel(void)
 		{
-			_sentinel = _alloc_node.allocate(1);
+			if(!_sentinel)
+				_sentinel = _alloc_node.allocate(1);
 			_sentinel->next = _sentinel;
 			_alloc.construct(&_sentinel->data, value_type());
 			_sentinel->previous = _sentinel;
@@ -901,14 +904,13 @@ namespace ft
 	** List: Non-member function overloads section	(relational operators)
 	** ********************************************************************
 	*/
- 	//TODO(Wed 10/02/2021 at 16:40:43) 
 	//(1)	
 	template <class T, class Alloc>
 	bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
 	{
 		if (lhs.size() != rhs.size())
 			return (false);			
-		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	//(2)	

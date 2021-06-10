@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/10 15:05:51 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/14 02:53:17 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/09 03:37:00 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ namespace ft
 
 		//need this default constructor in case the T template parameter is const
 		Node_list(void) :
-			data(nullptr),
+			data(),
 			next(nullptr), 
 			previous(nullptr)
 		{}

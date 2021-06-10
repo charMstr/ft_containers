@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 04:59:05 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/10 17:45:00 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/08 12:48:31 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,13 @@
 # include <exception>
 
 void	introduce_test(char *str);
+
 void	end_test(void);
 
 void	test_random_access_iterator(void);
+
 void	tests_vector(void);
+
 void	tests_reverse_iterator(void);
 
 void	tests_deque(void);

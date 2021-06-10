@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/29 15:13:06 by charmstr          #+#    #+#             */
-/*   Updated: 2021/02/04 18:21:21 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/08 17:22:03 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,13 @@
 
 /*
 ** The fundamental relation between a reverse iterator and its
-** corresponding iterator i is established by the identity:
+** corresponding iterator "i" is established by the identity:
 ** 			&*(reverse_iterator(i)) == &*(i - 1).
 ** This mapping is dictated by the fact that while there is always a pointer
 ** past the end of an array, there might not be a valid pointer before the
 ** beginning of an array.
+**
+** usefull source: https://en.cppreference.com/w/cpp/iterator/reverse_iterator
 **
 ** note: the reverse iterator should only be used with an input Iterator
 ** parameter of type BidirectionalIterator, or RandomAccessIterator.
@@ -139,7 +141,7 @@ namespace ft
 		//returns the used randomaccessiterator kept as a data member
 		Iterator base() { return _current; }
 
-		//return a reference to the original's iterator position - 1;
+		//return a reference to the original iterator's position - 1;
 		reference operator*() const
 		{
 			Iterator tmp = _current;
