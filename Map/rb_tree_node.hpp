@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 23:18:05 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/10 13:33:22 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/12 21:46:38 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ namespace ft
 	** ********************************************************************
 	*/
 		//friend of rb_tree so that it can access its protected data.
-		template <class, class, class, class>
+		template <class, class, class, class, class>
 		friend class rb_tree;
 
 		//friend of re_tree_iterator so that it can access its protected data.

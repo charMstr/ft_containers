@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 03:41:36 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/10 15:49:36 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/13 08:50:11 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,8 +167,8 @@ namespace ft
 	*/	
 		//the rb_tree class is made a friend so that it can access those
 		//functions.
-		template <class, class>
-		friend class list;
+		template <class, class, class, class, class>
+		friend class rb_tree;
 
 	private:
 		node_pointer get_ptr()
@@ -211,6 +211,8 @@ namespace ft
 			}
 			else //aim for the top right motion.
 			{
+				// [Sun 13/06/2021 at 06:30:36]
+				//TODO (charmstr):  take care of the _header
 				while (_ptr->parent)
 				{
 					node_pointer tmp = _ptr;
@@ -254,6 +256,8 @@ namespace ft
 			}
 			else //aim for the top right motion.
 			{
+				// [Sun 13/06/2021 at 06:30:36]
+				//TODO (charmstr):  take care of the _header
 				while (_ptr->parent)
 				{
 					node_pointer tmp = _ptr;

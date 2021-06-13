@@ -6,7 +6,7 @@
 #    By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/27 17:46:05 by charmstr          #+#    #+#              #
-#    Updated: 2021/06/09 20:48:19 by charmstr         ###   ########.fr        #
+#    Updated: 2021/06/12 20:47:05 by charmstr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,16 +27,16 @@ DEPS = $(INCLUDES)
 
 ################## FOR COMPILATION WITH DEBUG #################################
 ###############################################################################
-ifeq ($(f), n)
+ifeq ($(flags), n)
 CXXFLAGS 	=
 VALGRIND 	=
-else ifeq ($(f), d)
+else ifeq ($(flags), d)
 CXXFLAGS 	+= -D DEBUG=1
 VALGRIND 	=
-else ifeq ($(f), f)
+else ifeq ($(flags), f)
 CXXFLAGS 	+=  -fsanitize=address,undefined -g3
 VALGRIND 	=
-else ifeq ($(f), v)
+else ifeq ($(flags), v)
 CXXFLAGS 		+= -g3
 SHOW_LEAK 	= --show-leak-kinds=definite
 VALGRIND 	= valgrind --track-origins=yes --leak-check=full $(SHOW_LEAK)
