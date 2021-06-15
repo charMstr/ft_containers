@@ -34,11 +34,11 @@ _difference\_type_, ...)
 
 ## Shortcuts:
 
-# Coding deque class (bonus):
+### Coding deque class (bonus):
 Deque was coded first, in order to reuse it as a base class for the classes
 Stack, and queue.
 
-# Coding rb\_tree class (extra bonus):
+### Coding rb\_tree class (extra bonus):
 
 This class was coded in an attempt to give a base class to map, multimap, set
 and set. It is a reimplementation of a red black tree. Coded in C at the
