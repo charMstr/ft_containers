@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 03:41:36 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/13 08:50:11 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/14 23:27:05 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ namespace ft
 	** ********************************************************************
 	*/	
 		//dereference operator
-		reference operator*() const { return (_ptr->data); }
+		reference operator*() const { return (*(_ptr->data)); }
 
 		//-> operator
 		pointer operator->() const { return &(operator*()); }

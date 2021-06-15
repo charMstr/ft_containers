@@ -18,13 +18,6 @@
 # include "ft_utils.hpp"
 # include "rb_tree_node.hpp"
 
-# ifndef DEBUG
-#  define DEBUG 0
-# endif
-# if defined DEBUG && DEBUG
-#  include <iostream>
-# endif
-
 /*
 ** This class implements a container in a red black tree fashion.
 **
@@ -77,18 +70,12 @@ namespace ft
 		typedef std::allocator<node_type> 					node_allocator_type;
 
 		public:
-		//TYPES
-		//value_compare:
-
-		// [Sun 13/06/2021 at 08:56:08]
-		//TODO (charmstr): 
-		//typedef 	TODO									value_compare;
-		//key_compare:		The third parameter, it allows us to copmare keys.
-		typedef Compare										key_compare;
 		//key_type:			the type of the key in the key value pair.
 		typedef Key											key_type;
 		//value_type:		the type of elements contained in the Node
 		typedef	Value										value_type;
+		//key_compare:		The third parameter, it allows us to copmare keys.
+		typedef Compare										key_compare;
 		//allocator_type:	the allocator used to allocate memory.
 		typedef Alloc										allocator_type;
 		//reference:		the type "reference to value_type"
@@ -114,6 +101,21 @@ namespace ft
 															difference_type;
 		typedef typename node_allocator_type::size_type size_type;
 
+		class value_compare
+		{   // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
+			friend class rb_tree;
+			protected:
+				Compare comp;
+				value_compare (Compare c) : comp(c) {}  // constructed with rb_tree's comparison object
+			public:
+				typedef bool result_type;
+				typedef value_type first_argument_type;
+				typedef value_type second_argument_type;
+				bool operator() (const value_type& x, const value_type& y) const
+				{
+					return comp(x.first, y.first);
+				}
+		};
 	/*
 	** ********************************************************************
 	** Rb_tree: data section
@@ -196,7 +198,6 @@ namespace ft
 		}
 
 		//operator = (1)
-		//could not use const for some obscur reasons (problem of constness).
 		rb_tree& operator= (const rb_tree& x)
 		{
 			if (this != &x)	
@@ -288,15 +289,6 @@ namespace ft
 		
 	/*
 	** ********************************************************************
-	** Rb_tree: Element access section
-	** ********************************************************************
-	*/
-		// [Sun 13/06/2021 at 08:51:12]
-		//TODO (charmstr):  the hooks!
-		mapped_type& operator[] (const key_type& k);
-
-	/*
-	** ********************************************************************
 	** Rb_tree: Modifiers section
 	** ********************************************************************
 	*/
@@ -331,7 +323,8 @@ namespace ft
 				_size += 1;
 			else
 			{
-				_alloc.destroy(&new_node->data);
+				_alloc.destroy(new_node->data);
+				_alloc.deallocate(new_node->data, 1);
 				_alloc_node.deallocate(new_node, 1);
 			}
 			return (insert);
@@ -376,7 +369,8 @@ namespace ft
 				dummy1, dummy2);
 			if (del_me)
 			{
-				_alloc.destroy(&del_me->data);
+				_alloc.destroy(del_me->data);
+				_alloc.deallocate(del_me->data, 1);
 				_alloc_node.deallocate(del_me, 1);
 				_size -= 1;
 			}
@@ -400,7 +394,8 @@ namespace ft
 			while ((del_me = rb_tree_getnode(&_header.left_child, k)))
 			{
 				count++;
-				_alloc.destroy(&del_me->data);
+				_alloc.destroy(del_me->data);
+				_alloc.deallocate(del_me->data, 1);
 				_alloc_node.deallocate(del_me, 1);
 				_size -= 1;
 			}
@@ -410,7 +405,7 @@ namespace ft
 		//(3)
 		void erase (iterator first, iterator last)
 		{
-			if (first == end() || !_size)
+			if (first == last || first == end() || !_size)
 				return ;
 			node_pointer	del_me = first.get_ptr();
 			node_pointer	dont_del_me = last.get_ptr();
@@ -420,7 +415,8 @@ namespace ft
 			while ((del_me = rb_tree_getnode_by_address(&_header.left_child, \
 					del_me, del_me_next, dont_del_me)))
 			{
-				_alloc.destroy(&del_me->data);
+				_alloc.destroy(del_me->data);
+				_alloc.deallocate(del_me->data, 1);
 				_alloc_node.deallocate(del_me, 1);
 				_size -= 1;
 				//protect against  the next becoming the end.
@@ -461,14 +457,10 @@ namespace ft
 			return (_comp);
 		}
 
-		// [Sun 13/06/2021 at 08:56:16]
-		//TODO (charmstr): 
-		/*
 		value_compare value_comp() const
 		{
-			
+			return (value_compare(_comp));	
 		}
-		*/
 	/*
 	** ********************************************************************
 	** Rb_tree: Operations functions section
@@ -492,8 +484,8 @@ namespace ft
 			if (root)
 			{
 				rb_tree_count(root->left_child, k, count);
-				if (_comp(_key_of_value(root->data), k) == false && \
-					_comp(k, _key_of_value(root->data)) == false)
+				if (_comp(_key_of_value(*(root->data)), k) == false && \
+					_comp(k, _key_of_value(*(root->data))) == false)
 					count++;
 				rb_tree_count(root->right_child, k, count);
 			}
@@ -540,8 +532,8 @@ namespace ft
 				return (NULL);
 			if ((res = find_assist(root->left_child, k)))
 				return (res);
-			if (_comp(k, _key_of_value(root->data)) == false && \
-					_comp(_key_of_value(root->data), k) == false)
+			if (_comp(k, _key_of_value(*(root->data))) == false && \
+					_comp(_key_of_value(*(root->data)), k) == false)
 				return (root);
 			return (find_assist(root->right_child, k));
 		}
@@ -590,7 +582,7 @@ namespace ft
 				return (NULL);
 			if ((res = lower_bound_assist(root->left_child, k)))
 				return (res);
-			if (_comp(_key_of_value(root->data), k) == false)
+			if (_comp(_key_of_value(*(root->data)), k) == false)
 				return (root);
 			return (lower_bound_assist(root->right_child, k));
 		}
@@ -645,8 +637,8 @@ namespace ft
 				return (NULL);
 			if ((res = upper_bound_assist(root->left_child, k)))
 				return (res);
-			if (_comp(_key_of_value(root->data), k) == false && \
-					_comp(k, _key_of_value(root->data)) == true)
+			if (_comp(_key_of_value(*(root->data)), k) == false && \
+					_comp(k, _key_of_value(*(root->data))) == true)
 				return (root);
 			return(upper_bound_assist(root->right_child, k));
 		}
@@ -708,7 +700,17 @@ namespace ft
 		node_pointer _create_node(const value_type& val)
 		{
 			node_pointer new_node = _alloc_node.allocate(1);	
-			_alloc.construct(&new_node->data, val);
+			try
+			{
+				new_node->data = _alloc.allocate(1);
+			}
+			catch (const std::exception &e)
+			{
+				_alloc_node.deallocate(new_node, 1);
+				throw e;
+			}
+			_alloc.construct(new_node->data, val);
+
 			new_node->right_child = nullptr;
 			new_node->left_child = nullptr;
 			new_node->color = node_type::RB_RED;
@@ -741,12 +743,12 @@ namespace ft
 				return ;
 			}
 			new_node->parent = _header.left_child;
-			if (_comp(_key_of_value(new_node->data), \
-						_key_of_value(_header.left_child->data)) == true)
+			if (_comp(_key_of_value(*(new_node->data)), \
+						_key_of_value(*(_header.left_child->data))) == true)
 				rb_tree_add_assist(&_header.left_child, \
 						&(_header.left_child->left_child), new_node, insert);
-			else if (_comp(_key_of_value(_header.left_child->data), \
-						_key_of_value(new_node->data)) == true)
+			else if (_comp(_key_of_value(*(_header.left_child->data)), \
+						_key_of_value(*(new_node->data))) == true)
 				rb_tree_add_assist(&_header.left_child, \
 						&(_header.left_child->right_child), new_node, insert);
 			else if (insert.insert_only_if_unique == false)
@@ -770,12 +772,12 @@ namespace ft
 				return;
 			}
 			new_node->parent = *current;
-			if (_comp(_key_of_value(new_node->data), \
-						_key_of_value((*current)->data)) == true)
+			if (_comp(_key_of_value(*(new_node->data)), \
+						_key_of_value(*((*current)->data))) == true)
 				rb_tree_add_assist(top_node, &(*current)->left_child, \
 						new_node, insert);
-			else if (_comp(_key_of_value((*current)->data), \
-						_key_of_value(new_node->data)) == true)
+			else if (_comp(_key_of_value(*((*current)->data)), \
+						_key_of_value(*(new_node->data))) == true)
 				rb_tree_add_assist(top_node, &(*current)->right_child, \
 						new_node, insert);
 			else if (insert.insert_only_if_unique == false)
@@ -964,7 +966,8 @@ namespace ft
 			if ((*top_node)->right_child)
 				rb_tree_clear(&((*top_node)->right_child));
 			_size -= 1;
-			_alloc.destroy(&(*top_node)->data);
+			_alloc.destroy((*top_node)->data);
+			_alloc.deallocate((*top_node)->data, 1);
 			_alloc_node.deallocate(*top_node, 1);
 			*top_node = NULL;
 			if (set_headers_left_child_to_self)
@@ -985,7 +988,7 @@ namespace ft
 			if (root)
 			{
 				rb_tree_add_inorder(root->left_child);
-				insert_equal(root->data);
+				insert_equal(*(root->data));
 				rb_tree_add_inorder(root->right_child);
 			}
 		}
@@ -1081,8 +1084,8 @@ namespace ft
 
 			if (!*root || !current)
 				return (NULL);
-			if (_comp(_key_of_value(current->data), k) == false && \
-				_comp(k, _key_of_value(current->data)) == false)
+			if (_comp(_key_of_value(*(current->data)), k) == false && \
+				_comp(k, _key_of_value(*(current->data))) == false)
 			{
 				res = current;
 				if (current->left_child && current->right_child)
@@ -1136,7 +1139,7 @@ namespace ft
 		node_pointer
 		rb_tree_getnode_two_child(node_pointer *root, node_pointer current)
 		{
-			value_type	get_me_data;
+			value_type	*get_me_data;
 			node_pointer get_me_node;
 
 			get_me_node = current;
@@ -1144,6 +1147,7 @@ namespace ft
 			get_me_node = get_me_node->right_child;
 			while (get_me_node->left_child)
 				get_me_node = get_me_node->left_child;
+
 			current->data = get_me_node->data;
 			get_me_node->data = get_me_data;
 			if (get_me_node->color == node_type::RB_RED \
@@ -1529,7 +1533,7 @@ namespace ft
 					std::cout << "[";
 				//HERE it should do something like:
 				//std::cout << node->data; only 4 characters.
-				display(_key_of_value(node->data));
+				display(_key_of_value(*(node->data)));
 				std::cout << "]\033[0m";
 				while (i++ <= (size_line - SIZE_LEAF_DEBUG))
 					std::cout << " ";
@@ -1566,19 +1570,6 @@ namespace ft
 			"============================================\n" << std::endl;
 		}
 	};
-
-	/*
-	** ********************************************************************
-	** Rb_tree: Non-member function overloads section	(relational operators)
-	** ********************************************************************
-	*/
-
-	template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-	void swap (rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& x, \
-			rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& y)
-	{	
-		return (x.swap(y));
-	}
 }
 
 #endif

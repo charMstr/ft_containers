@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 20:02:01 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/13 08:28:53 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/15 02:45:22 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,70 +15,17 @@
 
 #include "functions_tests.hpp"
 #include <iterator>
-#include <sstream>
 #include <map>
-
-template <typename T>
-class identity
-{
-	public:
-	T&operator()(T& t) const
-	{
-		return (t);
-	}
-};
-
-template <class _Pair>
-struct _Select1st : public std::unary_function<_Pair,
-                      typename _Pair::first_type>
-{
-  typename _Pair::first_type&
-  operator()(_Pair& __x) const
-  { return __x.first; }
-
-  const typename _Pair::first_type&
-  operator()(const _Pair& __x) const
-  { return __x.first; }
-};
-
-void	output_int_with_4_char(const int &num)
-{
-	size_t i = 0;
-	std::stringstream ss;
-	std::string str;
-	ss << num;
-	ss >> str;
-
-	while (i < (SIZE_LEAF_DEBUG - 2) && i < str.length())
-	{
-		std::cout << str.c_str()[i];
-		i++;
-	}
-	while (i++ < SIZE_LEAF_DEBUG - 2)
-		std::cout << " ";
-}
-
-void	output_string_with_4_char(const std::string &str)
-{
-	size_t i = 0;
-	while (i < (SIZE_LEAF_DEBUG - 2) && i < str.length())
-	{
-		std::cout << str.c_str()[i];
-		i++;
-	}
-	while (i++ < SIZE_LEAF_DEBUG - 2)
-		std::cout << " ";
-}
 
 void	test_rb_tree_default_constructor1(void)
 {
-	ft::rb_tree<test_class, test_class, identity<test_class >, std::less<test_class> > ft_cont;	
+	ft::rb_tree<test_class, test_class, ft::identity<test_class >, std::less<test_class> > ft_cont;	
 	assert(ft_cont.size() == 0);
 }
 
 void	test_rb_tree_default_constructor2(void)
 {
-	ft::rb_tree<std::string, std::pair<std::string, int>, _Select1st<std::pair<std::string, int> >, std::less<std::string> > ft_cont;
+	ft::rb_tree<std::string, std::pair<std::string, int>, ft::_Select1st<std::pair<std::string, int> >, std::less<std::string> > ft_cont;
 	std::pair<std::string, int> pair("hey", 2);
 	std::pair<std::string, int> pair2("hoy", 3);
 	ft_cont.insert_equal(pair);
@@ -94,14 +41,14 @@ void	test_rb_tree_default_constructor2(void)
 
 void	test_rb_tree_copy_constructor(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	ft_cont.insert_equal(3);
 	ft_cont.insert_equal(4);
 	ft_cont.insert_equal(5);
 	assert(ft_cont.size() == 5);
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont2(ft_cont);
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont2(ft_cont);
 	assert(ft_cont.size() == ft_cont2.size());
 	ft_cont.rb_tree_debug(output_int_with_4_char);
 	ft_cont2.rb_tree_debug(output_int_with_4_char);
@@ -109,12 +56,12 @@ void	test_rb_tree_copy_constructor(void)
 
 void	test_rb_tree_operator_equal_constructor()
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	assert(ft_cont.size() == 2);
 
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont2;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont2;	
 	assert(ft_cont2.empty());
 	ft_cont = ft_cont2;
 	assert(ft_cont.empty());
@@ -122,15 +69,15 @@ void	test_rb_tree_operator_equal_constructor()
 
 void	test_rb_tree_range_constructor(size_t size)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	//std::rb_tree<int> std_cont;
 	
 	for (size_t i = 0; i < size; i++)
 		ft_cont.insert_equal(i + 42);	
 
-	ft::rb_tree<int, int, identity<int>, std::less<int> >::iterator ft_it = ft_cont.begin();
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::iterator ft_it = ft_cont.begin();
 	//from start to end;
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont2(false, ft_it, ft_cont.end());
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont2(false, ft_it, ft_cont.end());
 
 	assert(ft_cont2.size() == ft_cont.size());
 
@@ -146,7 +93,7 @@ void	test_rb_tree_range_constructor(size_t size)
 		ft_it++;
 	}
 	//from non start to end
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont3(false, ft_it, ft_cont.end());
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont3(false, ft_it, ft_cont.end());
 	assert(ft_cont3.size() == ft_cont.size() - (difference_in_size));
 }
 
@@ -154,7 +101,6 @@ void	test_rb_tree_constructors()
 {
 	test_rb_tree_default_constructor1();
 	test_rb_tree_default_constructor2();
-	/*
 	test_rb_tree_operator_equal_constructor();
 	test_rb_tree_copy_constructor();
 	test_rb_tree_range_constructor(0);
@@ -162,7 +108,6 @@ void	test_rb_tree_constructors()
 	test_rb_tree_range_constructor(2);
 	test_rb_tree_range_constructor(3);
 	test_rb_tree_range_constructor(10);
-	*/
 }
 
 void	test_rb_tree_iterator_conversions(void)
@@ -185,12 +130,12 @@ void	test_rb_tree_iterator_conversions(void)
 
 	////////////////////////////////////////////
 
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
-	ft::rb_tree<const int, const int, identity<const int>, std::less<const int> > const_ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<const int, const int, ft::identity<const int>, std::less<const int> > const_ft_cont;	
 
-	ft::rb_tree<int, int, identity<int>, std::less<int> >::iterator it;
-	ft::rb_tree<const int, const int,  identity<const int>, std::less<const int> >::iterator const2_it;
-	ft::rb_tree<int, int, identity<int>, std::less<int> >::const_iterator const_it;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::iterator it;
+	ft::rb_tree<const int, const int,  ft::identity<const int>, std::less<const int> >::iterator const2_it;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::const_iterator const_it;
 	
 	const_it = it;
 	const2_it = const_ft_cont.begin();
@@ -204,8 +149,8 @@ void	test_rb_tree_iterator_conversions(void)
 
 void	test_rb_tree_iteration1(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
-	ft::rb_tree<int, int, identity<int>, std::less<int> >::iterator it = ft_cont.begin();
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::iterator it = ft_cont.begin();
 	assert(it == ft_cont.end());
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
@@ -219,7 +164,7 @@ void	test_rb_tree_iteration1(void)
 	for (; it != ft_cont.end(); ++it)
 	{
 		std::cout << *it;
-		ft::rb_tree<int, int, identity<int>, std::less<int> >::iterator tmp = it;
+		ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::iterator tmp = it;
 		if (++tmp == ft_cont.end())
 			std::cout  << std::endl;
 		else
@@ -229,7 +174,7 @@ void	test_rb_tree_iteration1(void)
 
 void	test_rb_tree_iteration2(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	ft_cont.insert_equal(3);
@@ -239,8 +184,8 @@ void	test_rb_tree_iteration2(void)
 
 void	test_rb_tree_reverse_iteration1(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
-	ft::rb_tree<int, int, identity<int>, std::less<int> >::reverse_iterator it = ft_cont.rbegin();
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::reverse_iterator it = ft_cont.rbegin();
 	assert(it == ft_cont.end());
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
@@ -254,7 +199,7 @@ void	test_rb_tree_reverse_iteration1(void)
 	for (; it != ft_cont.rend(); ++it)
 	{
 		std::cout << *it;
-		ft::rb_tree<int, int, identity<int>, std::less<int> >::reverse_iterator tmp = it;
+		ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::reverse_iterator tmp = it;
 		if (++tmp == ft_cont.rend())
 			std::cout  << std::endl;
 		else
@@ -271,7 +216,7 @@ void	test_rb_tree_iteration(void)
 
 void test_rb_tree_insert(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 
 	ft_cont.insert_equal(3);
 	ft_cont.rb_tree_debug(output_int_with_4_char);
@@ -316,7 +261,7 @@ void test_rb_tree_insert(void)
 //tests that we can insert multiple elements that have the same key.
 void	test_rb_tree_insert_equal(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(1);
@@ -327,7 +272,7 @@ void	test_rb_tree_insert_equal(void)
 //tests that we can insert only unique elements (no two same keys possible!).
 void	test_rb_tree_insert_unique(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_unique(1);
 	ft_cont.insert_unique(1);
 	ft_cont.insert_unique(1);
@@ -348,7 +293,7 @@ void	test_rb_tree_insert_unique(void)
 
 void	test_rb_tree_count(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(1);
@@ -356,7 +301,7 @@ void	test_rb_tree_count(void)
 	assert(ft_cont.count(1) == 3);
 	assert(ft_cont.count(2) == 0);
 
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont2;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont2;	
 	ft_cont2.insert_unique(1);
 	ft_cont2.insert_unique(2);
 	ft_cont2.insert_unique(2);
@@ -369,7 +314,7 @@ void	test_rb_tree_count(void)
 void	test_rb_tree_find(void)
 {	
 	// ---- non const ----
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	ft_cont.insert_equal(3);
@@ -385,7 +330,7 @@ void	test_rb_tree_find(void)
 	assert(ft_cont.find(6) == ft_cont.end());
 
 	// ---- const test ----
-	ft::rb_tree<const int, const int, identity<const int>, std::less<const int> > const_ft_cont;
+	ft::rb_tree<const int, const int, ft::identity<const int>, std::less<const int> > const_ft_cont;
 	const_ft_cont.insert_equal(1);
 	const_ft_cont.insert_equal(2);
 	const_ft_cont.insert_equal(3);
@@ -403,7 +348,7 @@ void	test_rb_tree_find(void)
 
 void	test_rb_tree_lower_bound(void)
 {	
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	ft_cont.insert_equal(3);
@@ -418,7 +363,7 @@ void	test_rb_tree_lower_bound(void)
 
 void	test_rb_tree_upper_bound(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;	
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	ft_cont.insert_equal(3);
@@ -443,8 +388,8 @@ void	tests_rb_tree_bound(void)
 
 void	tests_rb_tree_equal_range(void)
 {
-	typedef ft::rb_tree<int, int, identity<int>, std::less<int> >::iterator it;
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont;
+	typedef ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::iterator it;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;
 	ft_cont.insert_equal(1);
 	ft_cont.insert_equal(2);
 	ft_cont.insert_equal(3);
@@ -473,7 +418,7 @@ void	tests_rb_tree_equal_range(void)
 
 void	test_rb_tree_swap(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont1;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(2);
 	ft_cont1.insert_equal(3);
@@ -487,7 +432,7 @@ void	test_rb_tree_swap(void)
 	assert(*ft_cont1.begin() == 1);
 	assert(*(--ft_cont1.end()) == 6);
 
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont2;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont2;
 	ft_cont2.insert_equal(10);
 	ft_cont2.insert_equal(12);
 	ft_cont2.insert_equal(13);
@@ -513,7 +458,7 @@ void	test_rb_tree_swap(void)
 
 void	test_rb_tree_erase2(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont1;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(2);
 	ft_cont1.insert_equal(3);
@@ -544,7 +489,7 @@ void	test_rb_tree_erase2(void)
 
 void	test_rb_tree_erase1(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont1;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(2);
 	ft_cont1.insert_equal(3);
@@ -571,7 +516,7 @@ void	test_rb_tree_erase1(void)
 
 void	test_rb_tree_erase3(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont1;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(2);
 	ft_cont1.insert_equal(3);
@@ -592,7 +537,7 @@ void	test_rb_tree_erase3(void)
 
 void	test_rb_tree_erase4(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont1;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(2);
 	ft_cont1.insert_equal(3);
@@ -613,7 +558,7 @@ void	test_rb_tree_erase4(void)
 
 void	test_rb_tree_erase5(void)
 {
-	ft::rb_tree<int, int, identity<int>, std::less<int> > ft_cont1;
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(1);
 	ft_cont1.insert_equal(1);
@@ -647,6 +592,22 @@ void	test_rb_tree_erase5(void)
 	assert(ft_cont1.size() == 5);
 }
 
+void	test_rb_tree_erase_range(size_t size)
+{
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont;	
+	//std::rb_tree<int> std_cont;
+	
+	for (size_t i = 0; i < size; i++)
+		ft_cont.insert_equal(i + 42);	
+	assert(ft_cont.size() == size);
+	//ft_cont.rb_tree_debug(output_int_with_4_char);
+	ft_cont.erase(ft_cont.begin(), --ft_cont.end());
+	//ft_cont.rb_tree_debug(output_int_with_4_char);
+	if (size > 0)
+		assert(ft_cont.size() == 1);
+	ft_cont.erase(ft_cont.begin(), ft_cont.end());
+	assert(ft_cont.empty());
+}
 
 void	tests_rb_tree_erase(void)
 {
@@ -656,6 +617,52 @@ void	tests_rb_tree_erase(void)
 	test_rb_tree_erase3();
 	test_rb_tree_erase4();
 	test_rb_tree_erase5();
+	test_rb_tree_erase_range(0);
+	test_rb_tree_erase_range(2);
+}
+
+void	tests_rb_tree_key_comp(void)
+{
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
+	ft_cont1.insert_equal(1);
+	ft_cont1.insert_equal(2);
+	ft_cont1.insert_equal(3);
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::key_compare  my_comp = ft_cont1.key_comp();
+
+	std::cout << "my container contains:\n";
+
+	int highest = *ft_cont1.rbegin();     // key value of last element
+
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::iterator it = ft_cont1.begin();
+	do {
+		std::cout << *it << '\n';
+	} while ( my_comp((*it++), highest) );
+
+	std::cout << '\n';
+}
+
+void	tests_rb_tree_value_comp(void)
+{
+	//impossible with to compile with int as value_type (type int does not contain an field element .first and .second ...)
+	//this is perfect.
+	/*
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> > ft_cont1;
+	ft_cont1.insert_equal(1);
+	ft_cont1.insert_equal(2);
+	ft_cont1.insert_equal(3);
+	ft::rb_tree<int, int, ft::identity<int>, std::less<int> >::value_compare  my_comp = ft_cont1.value_comp();
+	my_comp(1, 2);
+	*/
+
+	ft::rb_tree<std::string, std::pair<std::string, int>, ft::_Select1st<std::pair<std::string, int> >, std::less<std::string> > ft_cont1;
+	std::pair<std::string, int> pair("hey", 2);
+	std::pair<std::string, int> pair2("hoy", 3);
+	ft_cont1.insert_equal(pair);
+	ft_cont1.insert_equal(pair2);
+	ft::rb_tree<std::string, std::pair<std::string, int>, ft::_Select1st<std::pair<std::string, int> >, std::less<std::string> >::value_compare  my_comp = ft_cont1.value_comp();
+	assert(my_comp(pair, pair2) == true);
+	assert(my_comp(pair2, pair) == false);
+	assert(my_comp(pair2, pair2) == false);
 }
 
 void tests_rb_tree(void)
@@ -673,24 +680,8 @@ void tests_rb_tree(void)
 	tests_rb_tree_equal_range();
 	test_rb_tree_swap();
 	tests_rb_tree_erase();
-
-	//NOT DONE YET
-	/*
-	tests_assign();
-	tests_insert_if();
-	tests_erase();
-	tests_swap();
-	tests_resize();
-	tests_splice();
-	tests_remove();
-	tests_list_reverse();
-	tests_list_sort();
-	tests_unique();
-	tests_list_merge();
-	list_test_relational_operators(12);
-	*/
-
-	std::cout << "\033[32m [ OK ]\033[m" << std::endl;	
+	tests_rb_tree_key_comp();
+	tests_rb_tree_value_comp();
 }
 
 #endif

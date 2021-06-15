@@ -6,12 +6,14 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/25 06:38:55 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/08 13:34:15 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/14 19:04:55 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_UTILS_HPP
 # define FT_UTILS_HPP
+
+# include <functional>
 
 namespace ft
 {
@@ -100,6 +102,49 @@ namespace ft
 			return (true);
 		return (false);
 	}
+
+	/*
+	** ********************************************************************
+	** _Select1st:
+	** This struct allows to give to the class rb_tree a function object that
+	** will extract the first_type parameter out of an std::pair<first_type,
+	** second_type>, So its is basically used for map and multimap. This
+	** extracted first_type parameter will be feed into the function object
+	** Compare.
+	** ********************************************************************
+	*/
+	template <class _Pair>
+	struct _Select1st : public std::unary_function<_Pair,
+						typename _Pair::first_type>
+	{
+	typename _Pair::first_type&
+	operator()(_Pair& __x) const
+	{ return __x.first; }
+
+	const typename _Pair::first_type&
+	operator()(const _Pair& __x) const
+	{ return __x.first; }
+	};
+
+	/*
+	** ********************************************************************
+	** identity:
+	** This struct allows to give to the class rb_tree a function object that
+	** will give the first_type parameter out of type itself.
+	** So its is basically used for set and multiset. This extracted first_type
+	** parameter will be feed into the function object Compare.
+	** see _Select1st for more understanding of the reason it exists.
+	** ********************************************************************
+	*/
+	template <typename T>
+	class identity
+	{
+		public:
+			T&operator()(T& t) const
+			{
+				return (t);
+			}
+	};
 }
 
 #endif

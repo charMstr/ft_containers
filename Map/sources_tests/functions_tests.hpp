@@ -1,4 +1,3 @@
-/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   functions_tests.hpp                                :+:      :+:    :+:   */
@@ -22,12 +21,22 @@
 //# include <list>
 //# include "../list.hpp"
 
+# include "../ft_utils.hpp"
+
+# include <map>
+# include "../map.hpp"
+# include "../multimap.hpp"
+
+# include <set>
+# include "../set.hpp"
+# include "../multiset.hpp"
+
 #include <assert.h>
 # include <exception>
 
 void	introduce_test(char *str);
 
-void	end_test(void);
+void	end_test(char *str);
 
 void	test_random_access_iterator(void);
 
@@ -41,7 +50,14 @@ void	tests_stack(void);
 
 void	tests_list(void);
 
-void	tests_rb_tree();
+void	tests_rb_tree(void);
+
+void	tests_map(void);
+
+void	tests_multimap(void);
+
+void	output_int_with_4_char(const int &num);
+void	output_string_with_4_char(const std::string &str);
 
 class test_class
 {

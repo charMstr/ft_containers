@@ -6,7 +6,7 @@
 #    By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/27 17:46:05 by charmstr          #+#    #+#              #
-#    Updated: 2021/06/12 20:47:05 by charmstr         ###   ########.fr        #
+#    Updated: 2021/06/15 02:25:08 by charmstr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,9 @@ INCLUDE_PATH_PROJECT = ./
 ########################### HEADER FILES ######################################
 ###############################################################################
 #HERE
-HPP_FILES = rb_tree
+HPP_FILES = rb_tree \
+			map \
+			multimap 
 
 # MISSING QUEUE!!!
 
@@ -75,7 +77,9 @@ INCLUDES += sources_tests/functions_tests.hpp
 ###############################################################################
 # HERE
 SRC_FILES =	main\
-			tests_rb_tree
+			tests_rb_tree \
+			tests_map \
+			tests_multimap
 #missing queue !!
 	
 SRC = $(patsubst %, $(SRC_PATH)%.cpp, $(SRC_FILES))

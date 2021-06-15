@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 23:18:05 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/12 21:46:38 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/14 23:04:00 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,6 @@
 # define NODE_RB_TREE_HPP
 
 #include <memory> //used for the std::allocator<T> part
-
-# ifndef DEBUG
-#  define DEBUG 0
-# endif
-# if defined DEBUG && DEBUG
-#  include <iostream>
-# endif
 
 namespace ft
 {
@@ -44,7 +37,7 @@ namespace ft
 	** ********************************************************************
 	*/
 		protected:
-			value_type		data;	
+			value_type		*data;	
 			rb_tree_node*	left_child;
 			rb_tree_node*	right_child;
 			rb_tree_node*	parent;
@@ -57,7 +50,7 @@ namespace ft
 	*/
 		//need this default constructor in case the T template parameter is const
 		rb_tree_node(void) :
-			data(),
+			data(nullptr),
 			left_child(nullptr), 
 			right_child(nullptr),
 			parent(nullptr),
@@ -75,7 +68,7 @@ namespace ft
 		{
 			if (this != &rhs)
 			{
-				data = rhs.data;
+				*data = *(rhs.data);
 				left_child = rhs.left_child;
 				right_child = rhs.right_child;
 				parent = rhs.parent;
