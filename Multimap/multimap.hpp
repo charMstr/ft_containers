@@ -1,30 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map.hpp                                            :+:      :+:    :+:   */
+/*   multimap.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/14 17:52:23 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/15 03:59:55 by charmstr         ###   ########.fr       */
+/*   Created: 2021/06/15 02:02:23 by charmstr          #+#    #+#             */
+/*   Updated: 2021/06/15 03:59:40 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MAP_HPP
-# define MAP_HPP
+#ifndef MULTIMAP_HPP
+# define MULTIMAP_HPP
 
 #include "../ft_utils.hpp"
 #include <functional> //for std::less , it covers also std::pair
 # include "../Red_black_tree/rb_tree.hpp"
 
 /*
-** The class map, is inheriting from the class rb_tree.
+** The class multimap, is inheriting from the class rb_tree.
 ** Among the rb_tree's template parameters, a special function object is given 
 ** in place of KeyOfValue (3rd template parameter). It allows the rb_tree class
 ** to extract the element required by the function objet Compare, out of the
 ** "value_type" (a pair in map and multimap, a single element in set and
 ** multiset). This allows genericity. The same base class (rb_tree) can be used
 ** for map, multimap, set and multiset.
+**
+** NOTE: the class multimap is exactly like map, except for the insert
+** function, indeed, map uses rb_tree::insert_unique() funtion whereas multimap
+** uses rb_tree::insert_qual() function. Same goes for set and multiset.
 **
 ** In the case of map and multimap, the function _Select1st extracts the
 ** first_type out of an std::pair<first_type, second_type>. In the case of set
@@ -38,11 +42,11 @@ namespace ft
 				class T, \
 				class Compare = std::less<Key>, \
 				class Alloc = std::allocator<std::pair<const Key, T> > >
-	class map
+	class multimap
 	{
 	/*
 	** ********************************************************************
-	** Map: typedefs section
+	** Multimap: typedefs section
 	** ********************************************************************
 	*/
 		private:
@@ -63,11 +67,11 @@ namespace ft
 		private:
 		typedef ft::_Select1st<value_type>					KeyOfValue;
 		typedef ft::rb_tree< key_type, value_type, KeyOfValue, Compare, Alloc> \
-															map_tree;
+															multimap_tree;
 
 		public:
 		//value_compare:	a function object that allows to compare 2 value_type
-		typedef typename map_tree::value_compare			value_compare;
+		typedef typename multimap_tree::value_compare			value_compare;
 		//key_compare:		The third parameter, it allows us to copmare keys.
 		typedef Compare										key_compare;
 		//allocator_type:	the allocator used to allocate memory.
@@ -82,10 +86,10 @@ namespace ft
 		typedef typename allocator_type::const_pointer		const_pointer;	
 
 		//ITERATORS
-		typedef typename map_tree::iterator					iterator;
-		typedef typename map_tree::const_iterator			const_iterator;
-		typedef typename map_tree::reverse_iterator			reverse_iterator;
-		typedef typename map_tree::const_reverse_iterator	const_reverse_iterator;
+		typedef typename multimap_tree::iterator					iterator;
+		typedef typename multimap_tree::const_iterator			const_iterator;
+		typedef typename multimap_tree::reverse_iterator			reverse_iterator;
+		typedef typename multimap_tree::const_reverse_iterator	const_reverse_iterator;
 
 		//OTHER
 		typedef typename iterator_traits<iterator>::difference_type \
@@ -93,43 +97,43 @@ namespace ft
 		typedef typename node_allocator_type::size_type		size_type;
 	/*
 	** ********************************************************************
-	** Map: data section
+	** Multimap: data section
 	** ********************************************************************
 	*/
 		private:
-		map_tree tree;
+		multimap_tree tree;
 
 	/*
 	** ********************************************************************
-	** Map: constructors, destructor and copy section
+	** Multimap: constructors, destructor and copy section
 	** ********************************************************************
 	*/
 		public:
 		//CONSTRUCTORS
 		//empty (1)
-		explicit map (const key_compare& comp = key_compare(),
+		explicit multimap (const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
 		{
-			tree = map_tree(KeyOfValue(), comp, alloc);
+			tree = multimap_tree(KeyOfValue(), comp, alloc);
 		}
 
 		//range (2)
 		template <class InputIterator>
-		map (InputIterator first, InputIterator last,
+		multimap (InputIterator first, InputIterator last,
 					const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
 		{
-			tree = map_tree(true, first, last, KeyOfValue(), comp, alloc);
+			tree = multimap_tree(true, first, last, KeyOfValue(), comp, alloc);
 		}
 
 		//copy (3)
-		map (const map& x)
+		multimap (const multimap& x)
 		{
-			tree = map_tree(x.tree);
+			tree = multimap_tree(x.tree);
 		}
 
 		//operator = (1)
-		 map& operator= (const map& x)
+		 multimap& operator= (const multimap& x)
 		 {
 			if (&tree != &x.tree)
 				tree = x.tree;
@@ -137,13 +141,13 @@ namespace ft
 		 }
 
 		 //destructor
-		~map()
+		~multimap()
 		{
 		}
 
 	/*
 	** ********************************************************************
-	** Map: iterators section
+	** Multimap: iterators section
 	** ********************************************************************
 	*/
 		//Returns an iterator pointing to the first element of the tree, the
@@ -169,7 +173,7 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Map: capacity section
+	** Multimap: capacity section
 	** ********************************************************************
 	*/
 		//Returns the maximum number of elements that the vector can hold.
@@ -183,29 +187,15 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Map: Element access section
-	** ********************************************************************
-	*/
-		mapped_type& operator[] (const key_type& k)
-		{
-			typename map_tree::t_insert_info info;	
-
-			value_type val_to_add(k, mapped_type());
-			info = tree.insert_unique(val_to_add);
-			return (info.iter_to_return->second);
-		}
-
-	/*
-	** ********************************************************************
-	** Map: Modifiers section
+	** Multimap: Modifiers section
 	** ********************************************************************
 	*/
 		//single element (1)
-		std::pair<iterator,bool> insert (const value_type& val)
+		iterator insert (const value_type& val)
 		{
-			typename map_tree::t_insert_info info;	
-			info = tree.insert_unique(val);
-			return (std::pair<iterator, bool>(info.iter_to_return, info.insert_successful));
+			typename multimap_tree::t_insert_info info;	
+			info = tree.insert_equal(val);
+			return (info.iter_to_return);
 		}
 
 		//with hint (2)
@@ -213,8 +203,8 @@ namespace ft
 		{
 			//fuck the hint	
 			(void)position;
-			typename map_tree::t_insert_info info;	
-			info = tree.insert_unique(val);
+			typename multimap_tree::t_insert_info info;	
+			info = tree.insert_equal(val);
 			return (info.iter_to_return);
 		}
 
@@ -224,9 +214,9 @@ namespace ft
 			typename ft::enable_if< is_iterator<InputIterator>::value &&
 			is_input_iterator<InputIterator>::value, InputIterator>::type last)
 		{
-			typename map_tree::t_insert_info info;	
+			typename multimap_tree::t_insert_info info;	
 			for (;first != last; ++first)
-				info = tree.insert_unique(*first);
+				info = tree.insert_equal(*first);
 		}
 
 		//(1)
@@ -236,7 +226,7 @@ namespace ft
 		//(3)
 		void erase (iterator first, iterator last) { tree.erase(first, last); }
 
-		void swap (map& x)
+		void swap (multimap& x)
 		{
 			tree.swap(x.tree);
 		}
@@ -246,7 +236,7 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Map: Observers section
+	** Multimap: Observers section
 	** ********************************************************************
 	*/
 		key_compare key_comp() const { return (tree.key_comp()); }
@@ -255,7 +245,7 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Map: Operations functions section
+	** Multimap: Operations functions section
 	** ********************************************************************
 	*/
 		iterator find (const key_type& k) { return tree.find(k); }
@@ -289,7 +279,7 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Map: public helper functions section, DEBUGGING section.
+	** Multimap: public helper functions section, DEBUGGING section.
 	** ********************************************************************
 	*/
 		// [Mon 14/06/2021 at 19:48:25]

@@ -6,23 +6,16 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 15:14:11 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/08 13:35:06 by charmstr         ###   ########.fr       */
+/*   Updated: 2021/06/15 04:34:19 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include "ft_random_access_iterator.hpp"
-# include "ft_reverse_iterator.hpp"
-# include "ft_utils.hpp"
-
-# ifndef DEBUG
-#  define DEBUG 0
-# endif
-# if defined DEBUG && DEBUG
-#  include <iostream>
-# endif
+# include "../Iterators/ft_random_access_iterator.hpp"
+# include "../Iterators/ft_reverse_iterator.hpp"
+# include "../ft_utils.hpp"
 
 namespace ft
 {
@@ -84,22 +77,13 @@ namespace ft
 			_start(nullptr),
 			_end(nullptr),
 			_end_of_capacity(nullptr)
-		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"default constructor(vector)" <<
-				"\033[0m" << std::endl;
-		}
+		{ }
 
 		//Constructor fill (2)	
 		explicit vector(size_type n, const value_type& val = value_type(),
 				const allocator_type& alloc = allocator_type()) :
 			_alloc(alloc)
 		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"fill constructor(vector)" <<
-				"\033[0m" << std::endl;
 			_start = _alloc.allocate(n); //should throw if failure
 			_end = _start + n;
 			_end_of_capacity = _end;
@@ -115,10 +99,6 @@ namespace ft
 			const allocator_type& alloc = allocator_type()) :
 				_alloc(alloc)
 		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"range constructor(vector)" <<
-				"\033[0m" << std::endl;
 			difference_type size;
 			distance(first, last, size);
 			_start = _alloc.allocate(size);
@@ -130,10 +110,6 @@ namespace ft
 		//Constructor copy (4)	
 		vector (const vector& x)
 		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"copy constructor(vector)" <<
-				"\033[0m" << std::endl;
 			size_type dist;
 			distance(x.begin(), x.end(), dist);
 			_start = _alloc.allocate(x.end() - x.begin());
@@ -145,10 +121,6 @@ namespace ft
 		//Destructor
 		~vector ()
 		{
-			if (DEBUG)
-				std::cout << "\033[31m[~]\033[34m" <<
-				"destructor(vector)" <<
-				"\033[0m" << std::endl;
 			clear();
 			_alloc.deallocate(_start, capacity());
 		}
@@ -183,18 +155,10 @@ namespace ft
 		//Returns an iterator pointing to the first element in the vector.
 		iterator				begin()
 		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"begin(vector)" <<
-				"\033[0m" << std::endl;
 			return (_start);
 		}
 		const_iterator			begin() const
 		{
-			if (DEBUG)
-				std::cout << "\033[34m" <<
-				"begin(vector) const" <<
-				"\033[0m" << std::endl;
 			return (_start);
 		}
 		

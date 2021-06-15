@@ -1,24 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map.hpp                                            :+:      :+:    :+:   */
+/*   multiset.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/14 17:52:23 by charmstr          #+#    #+#             */
-/*   Updated: 2021/06/15 03:59:55 by charmstr         ###   ########.fr       */
+/*   Created: 2021/06/15 03:10:25 by charmstr          #+#    #+#             */
+/*   Updated: 2021/06/15 05:34:32 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MAP_HPP
-# define MAP_HPP
+#ifndef MULTISET_HPP
+# define MULTISET_HPP
 
 #include "../ft_utils.hpp"
 #include <functional> //for std::less , it covers also std::pair
 # include "../Red_black_tree/rb_tree.hpp"
 
 /*
-** The class map, is inheriting from the class rb_tree.
+** The class multiset, is inheriting from the class rb_tree.
 ** Among the rb_tree's template parameters, a special function object is given 
 ** in place of KeyOfValue (3rd template parameter). It allows the rb_tree class
 ** to extract the element required by the function objet Compare, out of the
@@ -34,11 +34,10 @@
 
 namespace ft
 {
-	template<	class Key, \
-				class T, \
-				class Compare = std::less<Key>, \
-				class Alloc = std::allocator<std::pair<const Key, T> > >
-	class map
+	template<	class T, \
+				class Compare = std::less<T>, \
+				class Alloc = std::allocator<T> >
+	class multiset
 	{
 	/*
 	** ********************************************************************
@@ -47,27 +46,25 @@ namespace ft
 	*/
 		private:
 		//the node of the rb_tree, containing the Value in question.
-		typedef ft::rb_tree_node< std::pair<const Key, T> >	node_type;
+		typedef ft::rb_tree_node<T> 	node_type;
 		typedef node_type*									node_pointer;
 		typedef std::allocator<node_type> 					node_allocator_type;
 
 		public:
 		//key_type:			the type of the key in the key value pair.
-		typedef Key											key_type;
-		//mapped_type:		the type of the value in the key value pair.
-		typedef T											mapped_type;
+		typedef T											key_type;
 		//value_type:		the type of elements contained in the Node
-		typedef	std::pair<const key_type, mapped_type>		value_type;
+		typedef	T											value_type;
 
 		//the underlying tree storing the data.
 		private:
-		typedef ft::_Select1st<value_type>					KeyOfValue;
+		typedef ft::identity<value_type>					KeyOfValue;
 		typedef ft::rb_tree< key_type, value_type, KeyOfValue, Compare, Alloc> \
-															map_tree;
+															multiset_tree;
 
 		public:
 		//value_compare:	a function object that allows to compare 2 value_type
-		typedef typename map_tree::value_compare			value_compare;
+		typedef Compare										value_compare;
 		//key_compare:		The third parameter, it allows us to copmare keys.
 		typedef Compare										key_compare;
 		//allocator_type:	the allocator used to allocate memory.
@@ -82,10 +79,10 @@ namespace ft
 		typedef typename allocator_type::const_pointer		const_pointer;	
 
 		//ITERATORS
-		typedef typename map_tree::iterator					iterator;
-		typedef typename map_tree::const_iterator			const_iterator;
-		typedef typename map_tree::reverse_iterator			reverse_iterator;
-		typedef typename map_tree::const_reverse_iterator	const_reverse_iterator;
+		typedef typename multiset_tree::iterator			iterator;
+		typedef typename multiset_tree::const_iterator			const_iterator;
+		typedef typename multiset_tree::reverse_iterator		reverse_iterator;
+		typedef typename multiset_tree::const_reverse_iterator	const_reverse_iterator;
 
 		//OTHER
 		typedef typename iterator_traits<iterator>::difference_type \
@@ -97,8 +94,7 @@ namespace ft
 	** ********************************************************************
 	*/
 		private:
-		map_tree tree;
-
+		multiset_tree tree;
 	/*
 	** ********************************************************************
 	** Map: constructors, destructor and copy section
@@ -107,29 +103,29 @@ namespace ft
 		public:
 		//CONSTRUCTORS
 		//empty (1)
-		explicit map (const key_compare& comp = key_compare(),
+		explicit multiset (const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
 		{
-			tree = map_tree(KeyOfValue(), comp, alloc);
+			tree = multiset_tree(KeyOfValue(), comp, alloc);
 		}
 
 		//range (2)
 		template <class InputIterator>
-		map (InputIterator first, InputIterator last,
+		multiset (InputIterator first, InputIterator last,
 					const key_compare& comp = key_compare(),
 					const allocator_type& alloc = allocator_type())
 		{
-			tree = map_tree(true, first, last, KeyOfValue(), comp, alloc);
+			tree = multiset_tree(true, first, last, KeyOfValue(), comp, alloc);
 		}
 
 		//copy (3)
-		map (const map& x)
+		multiset (const multiset& x)
 		{
-			tree = map_tree(x.tree);
+			tree = multiset_tree(x.tree);
 		}
 
 		//operator = (1)
-		 map& operator= (const map& x)
+		 multiset& operator= (const multiset& x)
 		 {
 			if (&tree != &x.tree)
 				tree = x.tree;
@@ -137,7 +133,7 @@ namespace ft
 		 }
 
 		 //destructor
-		~map()
+		~multiset()
 		{
 		}
 
@@ -183,28 +179,14 @@ namespace ft
 
 	/*
 	** ********************************************************************
-	** Map: Element access section
-	** ********************************************************************
-	*/
-		mapped_type& operator[] (const key_type& k)
-		{
-			typename map_tree::t_insert_info info;	
-
-			value_type val_to_add(k, mapped_type());
-			info = tree.insert_unique(val_to_add);
-			return (info.iter_to_return->second);
-		}
-
-	/*
-	** ********************************************************************
 	** Map: Modifiers section
 	** ********************************************************************
 	*/
 		//single element (1)
 		std::pair<iterator,bool> insert (const value_type& val)
 		{
-			typename map_tree::t_insert_info info;	
-			info = tree.insert_unique(val);
+			typename multiset_tree::t_insert_info info;	
+			info = tree.insert_equal(val);
 			return (std::pair<iterator, bool>(info.iter_to_return, info.insert_successful));
 		}
 
@@ -213,8 +195,8 @@ namespace ft
 		{
 			//fuck the hint	
 			(void)position;
-			typename map_tree::t_insert_info info;	
-			info = tree.insert_unique(val);
+			typename multiset_tree::t_insert_info info;	
+			info = tree.insert_equal(val);
 			return (info.iter_to_return);
 		}
 
@@ -224,9 +206,9 @@ namespace ft
 			typename ft::enable_if< is_iterator<InputIterator>::value &&
 			is_input_iterator<InputIterator>::value, InputIterator>::type last)
 		{
-			typename map_tree::t_insert_info info;	
+			typename multiset_tree::t_insert_info info;	
 			for (;first != last; ++first)
-				info = tree.insert_unique(*first);
+				info = tree.insert_equal(*first);
 		}
 
 		//(1)
@@ -236,7 +218,7 @@ namespace ft
 		//(3)
 		void erase (iterator first, iterator last) { tree.erase(first, last); }
 
-		void swap (map& x)
+		void swap (multiset& x)
 		{
 			tree.swap(x.tree);
 		}
